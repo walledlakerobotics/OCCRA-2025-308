@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "High Arm"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Left Start"
           }
         }
       ]
