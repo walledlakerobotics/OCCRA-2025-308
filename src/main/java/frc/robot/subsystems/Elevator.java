@@ -31,7 +31,8 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         // sets motors
         m_elevatorLeader = new SparkMax(ElevatorConstants.kElevatorLeaderMotorId, MotorType.kBrushless);
-        // m_elevatorFollower = new SparkMax(ElevatorConstants.kElevatorFollowerMotorId, MotorType.kBrushless);
+        // m_elevatorFollower = new SparkMax(ElevatorConstants.kElevatorFollowerMotorId,
+        // MotorType.kBrushless);
 
         // sets PID controller
         m_elevatorPIDController = new ProfiledPIDController(
@@ -64,7 +65,8 @@ public class Elevator extends SubsystemBase {
                 .follow(m_elevatorLeader)
                 .inverted(ElevatorConstants.kFollowerMotorInverted);
 
-        // m_elevatorFollower.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // m_elevatorFollower.configure(config, ResetMode.kResetSafeParameters,
+        // PersistMode.kPersistParameters);
 
         // gets encoder
         m_elevatorEncoder = m_elevatorLeader.getEncoder();
@@ -101,7 +103,6 @@ public class Elevator extends SubsystemBase {
      *                 <code>1</code>.
      */
     public void setVelocity(double velocity) {
-
         m_isPIDMode = false;
 
         velocity += ElevatorConstants.kElevatorG;
@@ -248,18 +249,19 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        final double currentHeight = getHeight();
-
-        if (m_isPIDMode) {
-            m_elevatorLeader.set(
-                    -m_elevatorPIDController.calculate(currentHeight) + ElevatorConstants.kElevatorG
-            );
-        }
-
         if (isAtBottom()) {
             m_elevatorEncoder.setPosition(0);
         } else if (isAtTop()) {
             m_elevatorEncoder.setPosition(ElevatorConstants.kTopSwitchHeight);
+        }
+
+        final double currentHeight = getHeight();
+
+        if (m_isPIDMode) {
+            double speed = m_elevatorPIDController.calculate(currentHeight) + ElevatorConstants.kElevatorG;
+
+            m_elevatorLeader.set(speed);
+            System.out.println(speed);
         }
     }
 }

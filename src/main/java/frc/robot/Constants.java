@@ -57,7 +57,7 @@ public final class Constants {
         public static final boolean kRightMotorsInverted = true;
 
         // idle mode
-        public static final IdleMode kMotorIdleMode = IdleMode.kBrake;
+        public static final IdleMode kMotorIdleMode = IdleMode.kCoast;
 
         // smart current limit
         public static final int kSmartCurrentLimitAmps = 30;
@@ -68,7 +68,7 @@ public final class Constants {
         public static final double kMaxAccelerationMetersPerSecondSquared = 10;
 
         // PID constants for controlling wheel velocity
-        public static final double kVelocityP = 0.2;
+        public static final double kVelocityP = 0.25;
         public static final double kVelocityI = 0.0;
         public static final double kVelocityD = 0.1;
         public static final double kVelocityS = 0.0;
@@ -76,9 +76,9 @@ public final class Constants {
         public static final double kVelocityA = 0.0;
 
         // PID constants for controlling robot rotation
-        public static final double kRotationP = 4.0;
-        public static final double kRotationI = 0.2;
-        public static final double kRotationD = 0.0;
+        public static final double kDriftCorrectionP = 6.0;
+        public static final double kDriftCorrectionI = 1.0;
+        public static final double kDriftCorrectionD = 0.1;
 
         // physical constants
         public static final double kWheelRadiusMeters = Units.inchesToMeters(3);
@@ -118,8 +118,8 @@ public final class Constants {
             throw new UnsupportedOperationException("This is a constants class!");
         }
 
-        public static final PIDConstants kTranslationConstants = new PIDConstants(1, 0, 0);
-        public static final PIDConstants kRotationConstants = new PIDConstants(1, 0, 0);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(5.0, 0.5, 0);
+        public static final PIDConstants kRotationConstants = new PIDConstants(5.0, 0.5, 0);
 
         public static final RobotConfig kRobotConfig;
 
@@ -148,19 +148,19 @@ public final class Constants {
         public static final boolean kLeaderMotorInverted = true;
         public static final boolean kFollowerMotorInverted = true;
         // level heights this will change
-        public static final double[] kElevatorLevelHeights = { 0, 0.762, 1.1938, 1.7018};
+        public static final double[] kElevatorLevelHeights = { 0, 0.762, 1.1938, 1.7018 };
         // idlemode
         public static final IdleMode kElevatorIdleMode = IdleMode.kBrake;
         // max height of elevator
         public static final double kTopSwitchHeight = 0.5;
         /** The P for the elevator PID. */
-        public static final double kElevatorP = 0.05;
+        public static final double kElevatorP = 1.0;
         /** The I for the elevator PID. */
         public static final double kElevatorI = 0.0;
         /** The D for the elevator PID. */
         public static final double kElevatorD = 0.0;
         /** The gravity feed forward for the elevator. */
-        public static final double kElevatorG = 0.0;
+        public static final double kElevatorG = 0.02;
         // current limit
         public static final int kSmartCurrentLimit = 30;
 
@@ -180,10 +180,10 @@ public final class Constants {
         public static final double kElevatorRotationsPerMinuteToMetersPerSecond = kElevatorRotationsToMeters / 60;
 
         /** The maximum allowed speed the elevator should move at. */
-        public static final double kElevatorMaxSpeedMetersPerSecond = 0.05;
+        public static final double kElevatorMaxSpeedMetersPerSecond = 5.0;
 
         /** The maximum allowed acceleration of the elevator. */
-        public static final double kElevatorMaxAccelerationMetersPerSecondSquared = 0.05;
+        public static final double kElevatorMaxAccelerationMetersPerSecondSquared = 5.0;
 
         /** The manual movement speed of the elevator. */
         public static final double kElevatorManualSpeed = 1.0;
@@ -247,7 +247,7 @@ public final class Constants {
         public static final int kSmartCurrentLimit = 30;
 
         // idle mode of the motors
-        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        public static final IdleMode kIdleMode = IdleMode.kCoast;
 
         // speeds when intaking and outtaking
         public static final double kClawSpeed = 1;

@@ -5,11 +5,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -51,6 +52,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         configureBindings();
+        configureNamedCommands();
 
         m_autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -97,20 +99,24 @@ public class RobotContainer {
                 .onTrue(m_claw.goToVelocity(-ClawConstants.kClawSpeed))
                 .onFalse(m_claw.goToVelocity(0));
 
-        // m_coDriverController.leftTrigger()
-        // .onTrue(m_elevator.goToLevel(0));
+        m_coDriverController.leftTrigger()
+        .onTrue(m_elevator.goToHeight(5));
 
         // m_coDriverController.rightTrigger()
         // .onTrue(m_elevator.goToLevel(0));
+    }
+ 
+    /**
+     * Configures PathPlanner named commands
+     */
+    private void configureNamedCommands() {
+        NamedCommands.registerCommand("High Arm", m_arm.goToAngle(ArmConstants.kHighAngle, true));
     }
 
     /**
      * Gets the {@link Command} to run in autonomous.
      */
     public Command getAutonomousCommand() {
-        // return m_autoChooser.getSelected();
-        return m_driveTrain.runOnce(() -> m_driveTrain.drive(0.7, 0, 0))
-            .andThen(Commands.waitSeconds(0.3))
-            .andThen(m_driveTrain.runOnce(m_driveTrain::stopDrive));
+        return m_autoChooser.getSelected();
     }
 }

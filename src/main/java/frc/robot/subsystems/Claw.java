@@ -5,11 +5,14 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.ClawConstants;
 
 /*
@@ -35,7 +38,11 @@ public class Claw extends SubsystemBase {
 
         m_forwardSwitch = m_clawMotor.getForwardLimitSwitch();
         m_reverseSwitch = m_clawMotor.getReverseLimitSwitch();
-        
+
+        // put drive motors into coast mode when disabled
+        RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached())
+                .onTrue(setIdleMode(IdleMode.kCoast))
+                .onFalse(setIdleMode(IdleMode.kBrake));
     }
 
     /**
@@ -45,6 +52,22 @@ public class Claw extends SubsystemBase {
      */
     public void setSpeed(double speed) {
         m_clawMotor.set(speed);
+    }
+
+    /**
+     * Creates a {@link Command} that sets the {@link IdleMode} for the claw motor.
+     * This will not persist through power cycles.
+     * 
+     * @param mode The idle mode to set.
+     * @return The command.
+     */
+    private Command setIdleMode(IdleMode mode) {
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(mode);
+
+        return Commands.runOnce(() -> {
+            m_clawMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        }).ignoringDisable(true);
     }
 
     /**

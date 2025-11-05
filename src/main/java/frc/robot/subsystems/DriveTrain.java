@@ -83,8 +83,9 @@ public class DriveTrain extends SubsystemBase {
     private Rotation2d m_fieldRelativeOffset = Rotation2d.kZero;
 
     private Rotation2d m_rotationSetpoint = Rotation2d.kZero;
-    private PIDController m_rotationController = new PIDController(DriveConstants.kRotationP, DriveConstants.kRotationI,
-            DriveConstants.kRotationD);
+    private PIDController m_rotationController = new PIDController(DriveConstants.kDriftCorrectionP,
+            DriveConstants.kDriftCorrectionI,
+            DriveConstants.kDriftCorrectionD);
     private double m_prevZRotation = 1;
     private boolean m_zRotationChanged = false;
 
@@ -150,7 +151,7 @@ public class DriveTrain extends SubsystemBase {
         m_driveTab.add("Field", m_field);
 
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
-                this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false);
+                this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
 
         // put drive motors into coast mode when disabled
         RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached())
@@ -187,23 +188,21 @@ public class DriveTrain extends SubsystemBase {
      *                      to true.
      */
     public void drive(double xSpeed, double ySpeed, double zRotation, boolean fieldRelative) {
-        System.out.println(m_prevZRotation);
-
         xSpeed *= DriveConstants.kMaxForwardSpeedMetersPerSecond;
         ySpeed *= DriveConstants.kMaxStrafeSpeedMetersPerSecond;
         zRotation *= DriveConstants.kMaxRotationSpeedRadiansPerSecond;
 
         double newZRotation = zRotation;
 
-        if (zRotation == 0) {
+        if (zRotation == 0 && !DriverStation.isAutonomous()) {
             if (m_prevZRotation != 0) {
                 m_zRotationChanged = true;
             }
 
-            if (m_zRotationChanged && Math.abs(Units.degreesToRadians(m_gyro.getRate())) < 0.01) {
+            if (m_zRotationChanged && Math.abs(Units.degreesToRadians(m_gyro.getRate())) == 0) {
                 resetRotationSetpoint();
             }
-   
+
             // continuously adjust for potential drift
             newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
                     m_rotationSetpoint.getRadians());
@@ -227,6 +226,7 @@ public class DriveTrain extends SubsystemBase {
      * @param speeds The ChassisSpeeds object.
      */
     public void drive(ChassisSpeeds speeds) {
+
         MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(speeds);
 
         m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
@@ -240,7 +240,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
-     * Creates a {@link Command} that drives the robot based on joystick or axis
+     * Creates a {@link Command} that drives the robot based on joystick or axis.
      * inputs.
      * 
      * @param xSpeedSupplier    Supplies the axis value for forward/backward
@@ -324,7 +324,9 @@ public class DriveTrain extends SubsystemBase {
      * @param pose The Pose2d object.
      */
     public void resetOdometry(Pose2d pose) {
-        // throw new RuntimeException();
+        System.out.println(pose);
+
+        resetFieldRelative();
         m_odometry.resetPosition(m_gyro.getRotation2d(), getWheelPositions(), pose);
     }
 
@@ -364,10 +366,10 @@ public class DriveTrain extends SubsystemBase {
      */
     public Command resetFieldRelative() {
         return Commands.runOnce(() -> {
-            // if (DriverStation.isFMSAttached()) {
-            //     m_fieldRelativeOffset = Rotation2d.kZero;
-            //     return;
-            // }
+            if (DriverStation.isFMSAttached()) {
+                m_fieldRelativeOffset = Rotation2d.kZero;
+                return;
+            }
 
             m_fieldRelativeOffset = m_gyro.getRotation2d();
         }).ignoringDisable(true);
@@ -376,13 +378,13 @@ public class DriveTrain extends SubsystemBase {
     /**
      * Gets the heading to use when calculating field relative drive controls.
      * 
-     * @return The {@link Rotation2d} heading.    
+     * @return The {@link Rotation2d} heading.
      */
     private Rotation2d getFieldRelativeHeading() {
-        // if (DriverStation.isFMSAttached()) {
-        //     m_fieldRelativeOffset = Rotation2d.kZero;
-        //     return m_odometry.getPoseMeters().getRotation();
-        // }
+        if (DriverStation.isFMSAttached()) {
+            m_fieldRelativeOffset = Rotation2d.kZero;
+            return m_odometry.getPoseMeters().getRotation();
+        }
 
         return m_gyro.getRotation2d().minus(m_fieldRelativeOffset);
     }
