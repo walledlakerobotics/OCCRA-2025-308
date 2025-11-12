@@ -122,14 +122,14 @@ public class RobotContainer {
         NamedCommands.registerCommand("Elevator Zero", m_elevator.goToHeight(0, true));
 
         NamedCommands.registerCommand("Drop",
-                m_claw.goToVelocity(ClawConstants.kClawSpeed)
+                m_intake.goToVelocity(IntakeConstants.kIntakeSpeed)
                         .andThen(Commands.waitSeconds(1.5))
-                        .andThen(m_claw.goToVelocity(0)));
+                        .andThen(m_intake.goToVelocity(0)));
 
         NamedCommands.registerCommand("Grab",
-                m_claw.goToVelocity(-ClawConstants.kClawSpeed)
+                m_intake.goToVelocity(-IntakeConstants.kIntakeSpeed)
                         .andThen(Commands.waitSeconds(1.5))
-                        .andThen(m_claw.goToVelocity(0)));
+                        .andThen(m_intake.goToVelocity(0)));
     }
 
     /**

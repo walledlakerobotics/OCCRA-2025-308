@@ -11,12 +11,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 /*
- *  A subsystem that controls the intake motor's
+ *  A subsystem that controls the robot's cube intake
  */
 public class Intake extends SubsystemBase {
-
-
-    private SparkMax m_leaderMotor, m_followerMotor;
+    private final SparkMax m_leaderMotor, m_followerMotor;
 
     public Intake() {
         m_leaderMotor = new SparkMax(IntakeConstants.kIntakeLeaderMotorId, MotorType.kBrushless);
@@ -35,14 +33,14 @@ public class Intake extends SubsystemBase {
                 .inverted(IntakeConstants.kFollowerMotorInverted)
                 .follow(m_leaderMotor);
         
-        m_followerMotor.configure(config, null, null);
+        m_followerMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void setSpeed(double speed) {
+    public void setVelocity(double speed) {
         m_leaderMotor.set(speed);
     }
 
     public Command goToVelocity(double speed) {
-        return runOnce(() -> setSpeed(speed));
+        return runOnce(() -> setVelocity(speed));
     }
 }
