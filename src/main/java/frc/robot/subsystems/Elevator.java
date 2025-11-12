@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-    private SparkMax m_elevatorLeader;
+    private SparkMax m_elevatorMotor;
     private RelativeEncoder m_elevatorEncoder;
     private ProfiledPIDController m_elevatorPIDController;
     private SparkLimitSwitch m_bottomLimit;
@@ -30,9 +30,7 @@ public class Elevator extends SubsystemBase {
 
     public Elevator() {
         // sets motors
-        m_elevatorLeader = new SparkMax(ElevatorConstants.kElevatorLeaderMotorId, MotorType.kBrushless);
-        // m_elevatorFollower = new SparkMax(ElevatorConstants.kElevatorFollowerMotorId,
-        // MotorType.kBrushless);
+        m_elevatorMotor = new SparkMax(ElevatorConstants.kElevatorLeaderMotorId, MotorType.kBrushless);
 
         // sets PID controller
         m_elevatorPIDController = new ProfiledPIDController(
@@ -44,8 +42,7 @@ public class Elevator extends SubsystemBase {
                         ElevatorConstants.kElevatorMaxAccelerationMetersPerSecondSquared));
 
         // limit switches
-        m_bottomLimit = m_elevatorLeader.getReverseLimitSwitch();
-        // m_topLimit = new DigitalInput(ElevatorConstants.kTopInputChannel);
+        m_bottomLimit = m_elevatorMotor.getReverseLimitSwitch();
 
         // configure
         SparkMaxConfig config = new SparkMaxConfig();
@@ -59,17 +56,14 @@ public class Elevator extends SubsystemBase {
                 .positionConversionFactor(ElevatorConstants.kElevatorRotationsToMeters)
                 .velocityConversionFactor(ElevatorConstants.kElevatorRotationsPerMinuteToMetersPerSecond);
 
-        m_elevatorLeader.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         config
-                .follow(m_elevatorLeader)
+                .follow(m_elevatorMotor)
                 .inverted(ElevatorConstants.kFollowerMotorInverted);
 
-        // m_elevatorFollower.configure(config, ResetMode.kResetSafeParameters,
-        // PersistMode.kPersistParameters);
-
         // gets encoder
-        m_elevatorEncoder = m_elevatorLeader.getEncoder();
+        m_elevatorEncoder = m_elevatorMotor.getEncoder();
 
         m_elevatorTab.addDouble("Elevator Height", this::getHeight);
     }
@@ -111,13 +105,9 @@ public class Elevator extends SubsystemBase {
             // Prevent the elevator from going down when it reaches the bottom
             // by preventing the speed from being negative
             velocity = Math.max(0, velocity);
-        } else if (isAtTop()) {
-            // Prevent the elevator from going down when it reaches the top
-            // by preventing the speed from being positive
-            velocity = Math.min(0, velocity);
         }
 
-        m_elevatorLeader.set(velocity);
+        m_elevatorMotor.set(velocity);
 
     }
 
@@ -237,22 +227,10 @@ public class Elevator extends SubsystemBase {
         return m_bottomLimit.isPressed();
     }
 
-    /**
-     * returns if the limit switchs are triggered
-     * 
-     * @return returns if its false or true
-     */
-    public boolean isAtTop() {
-        // return m_topLimit.get();
-        return false;
-    }
-
     @Override
     public void periodic() {
         if (isAtBottom()) {
             m_elevatorEncoder.setPosition(0);
-        } else if (isAtTop()) {
-            m_elevatorEncoder.setPosition(ElevatorConstants.kTopSwitchHeight);
         }
 
         final double currentHeight = getHeight();
@@ -260,7 +238,7 @@ public class Elevator extends SubsystemBase {
         if (m_isPIDMode) {
             double speed = m_elevatorPIDController.calculate(currentHeight) + ElevatorConstants.kElevatorG;
 
-            m_elevatorLeader.set(speed);
+            m_elevatorMotor.set(speed);
         }
     }
 }
