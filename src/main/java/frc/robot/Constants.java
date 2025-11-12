@@ -76,7 +76,7 @@ public final class Constants {
         public static final double kVelocityA = 0.0;
 
         // PID constants for controlling robot rotation
-        public static final double kDriftCorrectionP = 6.0;
+        public static final double kDriftCorrectionP = 10.0;
         public static final double kDriftCorrectionI = 1.0;
         public static final double kDriftCorrectionD = 0.1;
 
@@ -108,9 +108,9 @@ public final class Constants {
         // to the stick drift
         public static final double kDeadband = 0.05;
 
-        public static final double kXAxisSensitvity = 0.9;
-        public static final double kYAxisSensitvity = 0.9;
-        public static final double kRotationAxisSensitivity = 0.9;
+        public static final double kXAxisSensitvity = 0.7;
+        public static final double kYAxisSensitvity = 0.7;
+        public static final double kRotationAxisSensitivity = 0.7;
     }
 
     public static class AutoConstants {
@@ -118,8 +118,8 @@ public final class Constants {
             throw new UnsupportedOperationException("This is a constants class!");
         }
 
-        public static final PIDConstants kTranslationConstants = new PIDConstants(5.0, 0.5, 0);
-        public static final PIDConstants kRotationConstants = new PIDConstants(5.0, 0.5, 0);
+        public static final PIDConstants kTranslationConstants = new PIDConstants(7.0, 1.0, 0.5);
+        public static final PIDConstants kRotationConstants = new PIDConstants(5.0, 1.0, 0.0);
 
         public static final RobotConfig kRobotConfig;
 
@@ -152,11 +152,11 @@ public final class Constants {
         // idlemode
         public static final IdleMode kElevatorIdleMode = IdleMode.kBrake;
         // max height of elevator
-        public static final double kTopSwitchHeight = 0.5;
+        public static final double kTopSwitchHeight = 50;
         /** The P for the elevator PID. */
-        public static final double kElevatorP = 1.0;
+        public static final double kElevatorP = 0.5;
         /** The I for the elevator PID. */
-        public static final double kElevatorI = 0.0;
+        public static final double kElevatorI = 0.1;
         /** The D for the elevator PID. */
         public static final double kElevatorD = 0.0;
         /** The gravity feed forward for the elevator. */
@@ -164,7 +164,7 @@ public final class Constants {
         // current limit
         public static final int kSmartCurrentLimit = 30;
 
-        public static final double kErrorTolerance = 0.05;
+        public static final double kErrorTolerance = 0.1;
 
         /** The reduction in distance calculated by endcoders due to gear ratio. */
         public static final double kElevatorReduction = 2.0;
@@ -180,10 +180,10 @@ public final class Constants {
         public static final double kElevatorRotationsPerMinuteToMetersPerSecond = kElevatorRotationsToMeters / 60;
 
         /** The maximum allowed speed the elevator should move at. */
-        public static final double kElevatorMaxSpeedMetersPerSecond = 5.0;
+        public static final double kElevatorMaxSpeedMetersPerSecond = 100.0;
 
         /** The maximum allowed acceleration of the elevator. */
-        public static final double kElevatorMaxAccelerationMetersPerSecondSquared = 5.0;
+        public static final double kElevatorMaxAccelerationMetersPerSecondSquared = 50.0;
 
         /** The manual movement speed of the elevator. */
         public static final double kElevatorManualSpeed = 1.0;
@@ -215,7 +215,7 @@ public final class Constants {
         /** The maximum speed of the arm in rotations per second. */
         public static final double kArmMaxSpeedRPS = 0.5;
         /** The maximum acceleration of the arm in rotations per second squared. */
-        public static final double kArmMaxAccelerationRPSSquared = 1;
+        public static final double kArmMaxAccelerationRPSSquared = 0.5;
 
         /** The P for the arm PID controller. */
         public static final double kArmP = 2.5;
@@ -226,6 +226,8 @@ public final class Constants {
 
         /** The gravity gain for the arm feedforward. */
         public static final double kArmG = 0.02;
+
+        public static Rotation2d kErrorTolerance = Rotation2d.fromDegrees(5);
 
         public static final Rotation2d kIntakeAngle = Rotation2d.fromDegrees(-30);
         public static final Rotation2d kHighAngle = Rotation2d.fromDegrees(45);
