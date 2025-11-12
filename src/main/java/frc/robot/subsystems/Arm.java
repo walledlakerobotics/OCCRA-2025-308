@@ -82,6 +82,7 @@ public class Arm extends SubsystemBase {
                 () -> Utils.roundToNearest(Units.rotationsToDegrees(m_angleController.getGoal().velocity), 2));
 
         m_angleController.enableContinuousInput(0, 1);
+        m_angleController.setTolerance(ArmConstants.kErrorTolerance.getRotations());
     }
 
     /**
