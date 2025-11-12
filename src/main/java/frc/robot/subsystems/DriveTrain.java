@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,6 +22,7 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -29,6 +31,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -36,9 +39,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.ControllerUtils;
+import frc.robot.utils.Utils;
 
 /**
  * A subsystem that controls the robot's drive train.
@@ -153,6 +158,22 @@ public class DriveTrain extends SubsystemBase {
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
                 this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
 
+        Utils.configureSysID(m_driveTab.getLayout("Linear SysID", BuiltInLayouts.kList),
+                new Config(), volts -> {
+                    for (SparkMax motor : m_allMotors) {
+                        motor.setVoltage(volts);
+                    }
+                }, this, m_allMotors);
+
+        Utils.configureSysID(m_driveTab.getLayout("Angular SysID", BuiltInLayouts.kList),
+                new Config(), volts -> {
+                    m_frontRightMotor.setVoltage(volts);
+                    m_rearRightMotor.setVoltage(volts);
+
+                    m_frontLeftMotor.setVoltage(volts.unaryMinus());
+                    m_rearLeftMotor.setVoltage(volts.unaryMinus());
+                }, this, m_allMotors);
+
         // put drive motors into coast mode when disabled
         RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached())
                 .onTrue(setIdleMode(IdleMode.kCoast))
@@ -194,18 +215,20 @@ public class DriveTrain extends SubsystemBase {
 
         double newZRotation = zRotation;
 
-        if (zRotation == 0 && !DriverStation.isAutonomous()) {
+        if (zRotation == 0) {
             if (m_prevZRotation != 0) {
                 m_zRotationChanged = true;
             }
 
-            if (m_zRotationChanged && Math.abs(Units.degreesToRadians(m_gyro.getRate())) == 0) {
+            if (m_zRotationChanged && Math.abs(Units.degreesToRadians(m_gyro.getRate())) < 0.05) {
                 resetRotationSetpoint();
             }
 
-            // continuously adjust for potential drift
-            newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
-                    m_rotationSetpoint.getRadians());
+            if (!m_zRotationChanged) {
+                // continuously adjust for potential drift
+                newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
+                        m_rotationSetpoint.getRadians());
+            }
         } else {
             m_zRotationChanged = false;
         }
@@ -225,9 +248,8 @@ public class DriveTrain extends SubsystemBase {
      * 
      * @param speeds The ChassisSpeeds object.
      */
-    public void drive(ChassisSpeeds speeds) {
-
-        MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(speeds);
+    public void drive(ChassisSpeeds chassisSpeeds) {
+        MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(chassisSpeeds);
 
         m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
 
@@ -260,7 +282,11 @@ public class DriveTrain extends SubsystemBase {
      * @return A command that drives the robot based on joystick inputs.
      */
     public Command drive(DoubleSupplier xSpeedSupplier, DoubleSupplier ySpeedSupplier,
-            DoubleSupplier zRotationSupplier) {
+            DoubleSupplier zRotationSupplier, BooleanSupplier fieldRelativeSupllier) {
+        SlewRateLimiter xLimter = new SlewRateLimiter(2.0);
+        SlewRateLimiter yLimter = new SlewRateLimiter(2.0);
+        SlewRateLimiter rotationLimter = new SlewRateLimiter(2.0);
+
         return runOnce(this::resetRotationSetpoint).andThen(run(() -> {
             double xSpeed = -xSpeedSupplier.getAsDouble();
             double ySpeed = -ySpeedSupplier.getAsDouble();
@@ -275,7 +301,11 @@ public class DriveTrain extends SubsystemBase {
             zRotation = MathUtil.applyDeadband(zRotation, DriveConstants.kDeadband);
             zRotation = ControllerUtils.axisSensitivity(zRotation, DriveConstants.kRotationAxisSensitivity);
 
-            drive(xSpeed, ySpeed, zRotation);
+            xSpeed = xLimter.calculate(xSpeed);
+            ySpeed = yLimter.calculate(ySpeed);
+            zRotation = rotationLimter.calculate(zRotation);
+
+            drive(xSpeed, ySpeed, zRotation, fieldRelativeSupllier.getAsBoolean());
         }));
     }
 
@@ -288,20 +318,30 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
+     * Gets the current wheel speeds in meters per second.
+     * 
+     * @return The {@link MecanumDriveWheelSpeeds} representing the current wheel
+     *         speeds in meters per second.
+     */
+    public MecanumDriveWheelSpeeds getWheelSpeeds() {
+        return new MecanumDriveWheelSpeeds(
+                m_frontLeftEncoder.getVelocity(),
+                m_frontRightEncoder.getVelocity(),
+                m_rearLeftEncoder.getVelocity(),
+                m_rearRightEncoder.getVelocity());
+    }
+
+    /**
      * Gets the current robot relative {@link ChassisSpeeds}.
      * 
      * @return The current robot relative chassis speeds.
      */
     public ChassisSpeeds getChassisSpeeds() {
-        MecanumDriveWheelSpeeds wheelSpeeds = new MecanumDriveWheelSpeeds(
-                m_frontLeftEncoder.getVelocity(),
-                m_frontRightEncoder.getVelocity(),
-                m_rearLeftEncoder.getVelocity(),
-                m_rearRightEncoder.getVelocity());
+        MecanumDriveWheelSpeeds wheelSpeeds = getWheelSpeeds();
 
-        ChassisSpeeds speeds = DriveConstants.kDriveKinematics.toChassisSpeeds(wheelSpeeds);
+        ChassisSpeeds chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(wheelSpeeds);
 
-        return speeds;
+        return chassisSpeeds;
     }
 
     /**
@@ -324,8 +364,6 @@ public class DriveTrain extends SubsystemBase {
      * @param pose The Pose2d object.
      */
     public void resetOdometry(Pose2d pose) {
-        System.out.println(pose);
-
         resetFieldRelative();
         m_odometry.resetPosition(m_gyro.getRotation2d(), getWheelPositions(), pose);
     }
