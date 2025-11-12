@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.45609922545146275,
-        "y": 5.71115551869658
+        "x": 1.6899908498612177,
+        "y": 5.940306820372677
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1042258951987782,
-        "y": 5.702342007093653
+        "x": 3.0827766782390844,
+        "y": 5.940306820372677
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Second Cube 1"
     },
     {
       "anchor": {
-        "x": 2.685917660991948,
+        "x": 3.0825256831236554,
         "y": 6.8745390502829204
       },
       "prevControl": {
-        "x": 2.694731172594876,
-        "y": 6.248779726475116
+        "x": 3.0825256831236554,
+        "y": 5.931539050282921
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "First Cube"
+      "linkedName": "Second Cube Score 2"
     }
   ],
   "rotationTargets": [],
@@ -35,8 +35,8 @@
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -2.9283035211582447e-10
+    "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
