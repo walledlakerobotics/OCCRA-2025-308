@@ -4,9 +4,20 @@
 
 package frc.robot.utils;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.function.Consumer;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -32,10 +43,36 @@ public class Utils {
      * @see ShuffleboardLayout
      * @see Command
      */
-    public static void configureSysID(ShuffleboardLayout layout, SysIdRoutine.Config config, Subsystem subsystem,
-            Consumer<Voltage> driveAtVoltage) {
+    public static void configureSysID(ShuffleboardLayout layout, SysIdRoutine.Config config,
+            Consumer<Voltage> driveAtVoltage, Subsystem subsystem, SparkMax... motors) {
+        RelativeEncoder[] encoders = new RelativeEncoder[motors.length];
+
+        MutVoltage[] voltages = new MutVoltage[motors.length];
+        MutLinearVelocity[] velocities = new MutLinearVelocity[motors.length];
+        MutDistance[] distances = new MutDistance[motors.length];
+
+        for (int i = 0; i < motors.length; i++) {
+            encoders[i] = motors[i].getEncoder();
+
+            voltages[i] = Volts.mutable(0);
+            velocities[i] = MetersPerSecond.mutable(0);
+            distances[i] = Meters.mutable(0);
+        }
+
         SysIdRoutine sysIdRoutine = new SysIdRoutine(config,
-                new SysIdRoutine.Mechanism(driveAtVoltage, null, subsystem));
+                new SysIdRoutine.Mechanism(driveAtVoltage, log -> {
+                    for (int i = 0; i < encoders.length; i++) {
+                        SparkMax motor = motors[i];
+                        RelativeEncoder encoder = encoders[i];
+
+                        log.motor("drive-motor-" + String.valueOf(i))
+                                .voltage(voltages[i].mut_replace(motor.get() * RobotController.getBatteryVoltage(),
+                                        Volts))
+                                .linearVelocity(velocities[i].mut_replace(encoder.getVelocity(), MetersPerSecond))
+                                .linearPosition(distances[i].mut_replace(encoder.getPosition(), Meters));
+
+                    }
+                }, subsystem));
 
         Command quasistaticForward = sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
         Command quasistaticBackward = sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
