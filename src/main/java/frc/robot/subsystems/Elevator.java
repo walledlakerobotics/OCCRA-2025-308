@@ -132,7 +132,7 @@ public class Elevator extends SubsystemBase {
     public Command goToHeight(double height, boolean endImmediately) {
         return runOnce(() -> setHeight(height))
                 .andThen(Commands.waitUntil(() -> m_elevatorPIDController.atGoal() || endImmediately))
-                .andThen(height == 0 ? zeroElevator() : Commands.none())
+                // .andThen(height == 0 ? zeroElevator() : Commands.none())
                 .withName("Go");
     }
 
@@ -261,7 +261,6 @@ public class Elevator extends SubsystemBase {
             double speed = m_elevatorPIDController.calculate(currentHeight) + ElevatorConstants.kElevatorG;
 
             m_elevatorLeader.set(speed);
-            System.out.println(speed);
         }
     }
 }
