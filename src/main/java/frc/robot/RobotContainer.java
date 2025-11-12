@@ -15,11 +15,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ClawConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
 
@@ -38,7 +38,7 @@ public class RobotContainer {
     private final DriveTrain m_driveTrain = new DriveTrain();
     private final Elevator m_elevator = new Elevator();
     private final Arm m_arm = new Arm();
-    private final Claw m_claw = new Claw();
+    private final Intake m_intake = new Intake();
 
     // controllers
     private final CommandXboxController m_driverController = new CommandXboxController(
@@ -98,12 +98,12 @@ public class RobotContainer {
                 .onFalse(m_elevator.goToVelocity(0));
 
         m_coDriverController.leftBumper()
-                .onTrue(m_claw.goToVelocity(ClawConstants.kClawSpeed))
-                .onFalse(m_claw.goToVelocity(0));
+                .onTrue(m_intake.goToVelocity(IntakeConstants.kIntakeSpeed))
+                .onFalse(m_intake.goToVelocity(0));
 
         m_coDriverController.rightBumper()
-                .onTrue(m_claw.goToVelocity(-ClawConstants.kClawSpeed))
-                .onFalse(m_claw.goToVelocity(0));
+                .onTrue(m_intake.goToVelocity(-IntakeConstants.kIntakeSpeed))
+                .onFalse(m_intake.goToVelocity(0));
 
         // m_coDriverController.leftTrigger()
         //         .onTrue(m_elevator.goToHeight(30));

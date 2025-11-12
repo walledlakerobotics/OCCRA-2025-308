@@ -233,13 +233,14 @@ public final class Constants {
         public static final Rotation2d kHighAngle = Rotation2d.fromDegrees(45);
     }
 
-    public static final class ClawConstants {
-        private ClawConstants() {
+    public static final class IntakeConstants {
+        private IntakeConstants() {
             throw new UnsupportedOperationException("This is a constants class!");
         }
 
         // ids of the motors
-        public static final int kClawMotorId = CANIDs.secondaryMotor(1);
+        public static final int kIntakeLeaderMotorId = CANIDs.secondaryMotor(1);
+        public static final int kIntakeFollowerMotorId = CANIDs.secondaryMotor(1);
 
         // whether to invert the motors
         public static final boolean kLeaderMotorInverted = false;
@@ -252,9 +253,9 @@ public final class Constants {
         public static final IdleMode kIdleMode = IdleMode.kCoast;
 
         // speeds when intaking and outtaking
-        public static final double kClawSpeed = 1;
+        public static final double kIntakeSpeed = 1;
 
-        public static final double kClawTime = 1;
+        public static final double kIntakeTime = 1;
 
         public static final int kCloseInputChannel = 0;
         public static final int kOpenInputChannel = 0;
