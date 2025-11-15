@@ -38,25 +38,6 @@
                 "data": {
                   "name": "Drop"
                 }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.2
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "High Arm"
-                      }
-                    }
-                  ]
-                }
               }
             ]
           }

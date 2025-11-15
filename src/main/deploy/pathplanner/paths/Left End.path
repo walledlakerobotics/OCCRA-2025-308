@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.0825256831236554,
-        "y": 6.8745390502829204
+        "y": 6.814315483124547
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.0825256831236554,
-        "y": 5.8745390502829204
+        "y": 5.814315483124547
       },
       "isLocked": false,
       "linkedName": "Second Cube Score 2"
