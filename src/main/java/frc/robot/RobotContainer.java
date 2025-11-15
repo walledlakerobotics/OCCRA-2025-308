@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -11,17 +12,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -55,11 +54,7 @@ public class RobotContainer {
         configureBindings();
         configureNamedCommands();
 
-        m_autoChooser = new SendableChooser<>();
-
-        m_autoChooser.setDefaultOption("None", Commands.none());
-        m_autoChooser.addOption("Move Forward", new PathPlannerAuto("Move Forward"));
-        m_autoChooser.addOption("Left", new PathPlannerAuto("Left"));
+        m_autoChooser = AutoBuilder.buildAutoChooser();
         m_autoChooser.addOption("Right", new PathPlannerAuto("Left", true));
 
         Shuffleboard.getTab("Autonomous").add("Auto", m_autoChooser);
@@ -78,7 +73,8 @@ public class RobotContainer {
     private void configureBindings() {
         m_driveTrain.setDefaultCommand(
                 m_driveTrain.drive(m_driverController::getLeftY, m_driverController::getLeftX,
-                        m_driverController::getRightX, () -> !m_driverController.getHID().getLeftBumperButton()));
+                        m_driverController::getRightX,
+                        () -> !m_driverController.getHID().getLeftBumperButton()));
 
         m_driverController.a()
                 .onTrue(m_driveTrain.resetFieldRelative());
@@ -87,8 +83,6 @@ public class RobotContainer {
                 .onTrue(m_arm.goToAngle(ArmConstants.kIntakeAngle));
         m_coDriverController.b()
                 .onTrue(m_arm.goToAngle(Rotation2d.kZero));
-        m_coDriverController.y()
-                .onTrue(m_arm.goToAngle(ArmConstants.kHighAngle));
 
         m_coDriverController.povUp()
                 .onTrue(m_elevator.goToVelocity(ElevatorConstants.kElevatorManualSpeed))
@@ -98,18 +92,16 @@ public class RobotContainer {
                 .onFalse(m_elevator.goToVelocity(0));
 
         m_coDriverController.leftBumper()
-                .onTrue(m_intake.goToVelocity(IntakeConstants.kIntakeSpeed))
-                .onFalse(m_intake.goToVelocity(0));
+                .whileTrue(m_intake.shootStraight());
 
         m_coDriverController.rightBumper()
-                .onTrue(m_intake.goToVelocity(-IntakeConstants.kIntakeSpeed))
-                .onFalse(m_intake.goToVelocity(0));
+                .whileTrue(m_intake.intake());
 
-        // m_coDriverController.leftTrigger()
-        //         .onTrue(m_elevator.goToHeight(30));
+        m_coDriverController.leftTrigger()
+                .whileTrue(m_intake.shootLeft());
 
-        // m_coDriverController.rightTrigger()
-        // .onTrue(m_elevator.goToLevel(0));
+        m_coDriverController.rightTrigger()
+                .whileTrue(m_intake.shootRight());
     }
 
     /**
@@ -117,19 +109,14 @@ public class RobotContainer {
      */
     private void configureNamedCommands() {
         NamedCommands.registerCommand("Zero Arm", m_arm.goToAngle(Rotation2d.kZero, true));
-        NamedCommands.registerCommand("High Arm", m_arm.goToAngle(ArmConstants.kHighAngle, true));
-        NamedCommands.registerCommand("Elevator L1", m_elevator.goToHeight(33, true));
+        NamedCommands.registerCommand("Elevator L1", m_elevator.goToHeight(31, true));
         NamedCommands.registerCommand("Elevator Zero", m_elevator.goToHeight(0, true));
 
         NamedCommands.registerCommand("Drop",
-                m_intake.goToVelocity(IntakeConstants.kIntakeSpeed)
-                        .andThen(Commands.waitSeconds(1.5))
-                        .andThen(m_intake.goToVelocity(0)));
+                m_intake.shootStraight().withTimeout(1.5));
 
         NamedCommands.registerCommand("Grab",
-                m_intake.goToVelocity(-IntakeConstants.kIntakeSpeed)
-                        .andThen(Commands.waitSeconds(1.5))
-                        .andThen(m_intake.goToVelocity(0)));
+                m_intake.intake().withTimeout(1.5));
     }
 
     /**
