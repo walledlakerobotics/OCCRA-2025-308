@@ -160,7 +160,7 @@ public final class Constants {
         /** The D for the elevator PID. */
         public static final double kElevatorD = 0.0;
         /** The gravity feed forward for the elevator. */
-        public static final double kElevatorG = 0.02;
+        public static final double kElevatorG = 0.035;
         // current limit
         public static final int kSmartCurrentLimit = 30;
 
@@ -202,7 +202,7 @@ public final class Constants {
         }
 
         /** The CAN ID of the arm motor. */
-        public static final int kArmMotorCanId = CANIDs.secondaryMotor(2);
+        public static final int kArmMotorCanId = CANIDs.secondaryMotor(1);
         /** The smart current limit for the motor */
         public static final int kSmartCurrentLimit = 30;
         /** The idle mode of the motor. */
@@ -225,7 +225,7 @@ public final class Constants {
         public static final double kArmD = 0;
 
         /** The gravity gain for the arm feedforward. */
-        public static final double kArmG = 0.02;
+        public static final double kArmG = 0.04;
 
         public static Rotation2d kErrorTolerance = Rotation2d.fromDegrees(5);
 
@@ -239,25 +239,30 @@ public final class Constants {
         }
 
         // ids of the motors
-        public static final int kIntakeLeaderMotorId = CANIDs.secondaryMotor(1);
-        public static final int kIntakeFollowerMotorId = CANIDs.secondaryMotor(1);
+        public static final int kIntakeLeftMotorId = CANIDs.secondaryMotor(3);
+        public static final int kIntakeRightMotorId = CANIDs.secondaryMotor(2);
 
         // whether to invert the motors
-        public static final boolean kLeaderMotorInverted = false;
-        public static final boolean kFollowerMotorInverted = false;
+        public static final boolean kLeftMotorInverted = false;
+        public static final boolean kRightMotorInverted = true;
 
         // current limit of the motors
         public static final int kSmartCurrentLimit = 30;
 
         // idle mode of the motors
-        public static final IdleMode kIdleMode = IdleMode.kCoast;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
 
-        // speeds when intaking and outtaking
-        public static final double kIntakeSpeed = 1;
+        // speed while holding a cube
+        public static final double kHoldSpeed = 0.3;
 
-        public static final double kIntakeTime = 1;
+        // speed while intaking
+        public static final double kIntakeSpeed = 0.5;
 
-        public static final int kCloseInputChannel = 0;
-        public static final int kOpenInputChannel = 0;
+        // speeds for shooting
+        public static final double kShootSpeed = 0.4;
+        public static final double kShootRotationOffset = 0.5;
+
+        // tolerance for intaking velocity
+        public static final double kIntakeVelocityTolerance = 0.03;
     }
 }
