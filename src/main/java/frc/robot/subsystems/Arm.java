@@ -14,7 +14,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,17 +68,6 @@ public class Arm extends SubsystemBase {
         m_armEncoder = m_armMotor.getAbsoluteEncoder();
 
         m_armTab.addDouble("Arm Angle", () -> Utils.roundToNearest(getAngle().getDegrees(), 2));
-        m_armTab.addDouble("Arm Velocity", () -> Utils.roundToNearest(getVelocity().getDegrees(), 2));
-
-        m_armTab.addDouble("Arm Angle Setpoint",
-                () -> Utils.roundToNearest(Units.rotationsToDegrees(m_angleController.getSetpoint().position), 2));
-        m_armTab.addDouble("Arm Velocity Setpoint",
-                () -> Utils.roundToNearest(Units.rotationsToDegrees(m_angleController.getSetpoint().velocity), 2));
-
-        m_armTab.addDouble("Arm Angle Goal",
-                () -> Utils.roundToNearest(Units.rotationsToDegrees(m_angleController.getGoal().position), 2));
-        m_armTab.addDouble("Arm Velocity Goal",
-                () -> Utils.roundToNearest(Units.rotationsToDegrees(m_angleController.getGoal().velocity), 2));
 
         m_angleController.enableContinuousInput(0, 1);
         m_angleController.setTolerance(ArmConstants.kErrorTolerance.getRotations());

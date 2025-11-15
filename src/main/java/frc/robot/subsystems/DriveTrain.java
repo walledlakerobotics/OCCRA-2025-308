@@ -94,7 +94,7 @@ public class DriveTrain extends SubsystemBase {
     private double m_prevZRotation = 1;
     private boolean m_zRotationChanged = false;
 
-    private ShuffleboardTab m_driveTab = Shuffleboard.getTab(getName());
+    private ShuffleboardTab m_driveTab = Shuffleboard.getTab("Drive Train");
 
     /**
      * Constructs a {@link DriveTrain}.
@@ -148,10 +148,6 @@ public class DriveTrain extends SubsystemBase {
 
         m_odometry = new MecanumDriveOdometry(DriveConstants.kDriveKinematics, m_gyro.getRotation2d(),
                 getWheelPositions());
-
-        m_driveTab.addNumber("Robot X (m)", () -> m_odometry.getPoseMeters().getX());
-        m_driveTab.addNumber("Robot Y (m)", () -> m_odometry.getPoseMeters().getY());
-        m_driveTab.addNumber("Robot Heading (deg)", () -> m_odometry.getPoseMeters().getRotation().getDegrees());
 
         m_driveTab.add("Field", m_field);
 

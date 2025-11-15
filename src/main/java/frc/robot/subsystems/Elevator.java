@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.utils.Utils;
 
 public class Elevator extends SubsystemBase {
     private SparkMax m_elevatorMotor;
@@ -65,7 +66,7 @@ public class Elevator extends SubsystemBase {
         // gets encoder
         m_elevatorEncoder = m_elevatorMotor.getEncoder();
 
-        m_elevatorTab.addDouble("Elevator Height", this::getHeight);
+        m_elevatorTab.addDouble("Elevator Height", () -> Utils.roundToNearest(getHeight(), 2));
     }
 
     /**
