@@ -147,7 +147,7 @@ public class DriveTrain extends SubsystemBase {
         m_driveTab.add("Field", m_field);
 
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
-                this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
+                speeds -> drive(speeds, false), AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
 
         // Utils.configureSysID(m_driveTab.getLayout("Linear SysID",
         // BuiltInLayouts.kList),
@@ -232,19 +232,30 @@ public class DriveTrain extends SubsystemBase {
     /**
      * Drives the robot based on robot relative {@link ChassisSpeeds}.
      * 
-     * @param speeds The ChassisSpeeds object.
+     * @param chassisSpeeds The ChassisSpeeds object.
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
+        drive(chassisSpeeds, true);
+    }
+
+    /**
+     * Drives the robot based on robot relative {@link ChassisSpeeds}.
+     * 
+     * @param chassisSpeeds The ChassisSpeeds object.
+     * @param useMaxMotion Whether or not to use REV Max Motion to limit acceleration. Defaults to true.
+     */
+    public void drive(ChassisSpeeds chassisSpeeds, boolean useMaxMotion) {
         MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(chassisSpeeds);
 
-        m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+        ControlType controlType = useMaxMotion ? ControlType.kMAXMotionVelocityControl : ControlType.kVelocity;
 
-        m_rearLeftClosedLoop.setReference(wheelSpeeds.rearLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+        m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, controlType);
 
-        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond,
-                ControlType.kMAXMotionVelocityControl);
+        m_rearLeftClosedLoop.setReference(wheelSpeeds.rearLeftMetersPerSecond, controlType);
 
-        m_rearRightClosedLoop.setReference(wheelSpeeds.rearRightMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond, controlType);
+
+        m_rearRightClosedLoop.setReference(wheelSpeeds.rearRightMetersPerSecond, controlType);
     }
 
     /**
@@ -268,7 +279,7 @@ public class DriveTrain extends SubsystemBase {
      * @return A command that drives the robot based on joystick inputs.
      */
     public Command drive(DoubleSupplier xSpeedSupplier, DoubleSupplier ySpeedSupplier,
-            DoubleSupplier zRotationSupplier, BooleanSupplier fieldRelativeSupllier) {
+            DoubleSupplier zRotationSupplier, BooleanSupplier fieldRelativeSupplier) {
         SlewRateLimiter xLimter = new SlewRateLimiter(2.0);
         SlewRateLimiter yLimter = new SlewRateLimiter(2.0);
         SlewRateLimiter rotationLimter = new SlewRateLimiter(2.0);
@@ -291,7 +302,7 @@ public class DriveTrain extends SubsystemBase {
             ySpeed = yLimter.calculate(ySpeed);
             zRotation = rotationLimter.calculate(zRotation);
 
-            drive(xSpeed, ySpeed, zRotation, fieldRelativeSupllier.getAsBoolean());
+            drive(xSpeed, ySpeed, zRotation, fieldRelativeSupplier.getAsBoolean());
         }));
     }
 
