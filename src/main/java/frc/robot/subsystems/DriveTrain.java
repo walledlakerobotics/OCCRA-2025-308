@@ -29,9 +29,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -39,11 +37,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.ControllerUtils;
-import frc.robot.utils.Utils;
 
 /**
  * A subsystem that controls the robot's drive train.
@@ -92,7 +88,6 @@ public class DriveTrain extends SubsystemBase {
             DriveConstants.kDriftCorrectionI,
             DriveConstants.kDriftCorrectionD);
     private double m_prevZRotation = 1;
-    private boolean m_zRotationChanged = false;
 
     private ShuffleboardTab m_driveTab = Shuffleboard.getTab("Drive Train");
 
@@ -154,21 +149,23 @@ public class DriveTrain extends SubsystemBase {
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
                 this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
 
-        Utils.configureSysID(m_driveTab.getLayout("Linear SysID", BuiltInLayouts.kList),
-                new Config(), volts -> {
-                    for (SparkMax motor : m_allMotors) {
-                        motor.setVoltage(volts);
-                    }
-                }, this, m_allMotors);
+        // Utils.configureSysID(m_driveTab.getLayout("Linear SysID",
+        // BuiltInLayouts.kList),
+        // new Config(), volts -> {
+        // for (SparkMax motor : m_allMotors) {
+        // motor.setVoltage(volts);
+        // }
+        // }, this, m_allMotors);
 
-        Utils.configureSysID(m_driveTab.getLayout("Angular SysID", BuiltInLayouts.kList),
-                new Config(), volts -> {
-                    m_frontRightMotor.setVoltage(volts);
-                    m_rearRightMotor.setVoltage(volts);
+        // Utils.configureSysID(m_driveTab.getLayout("Angular SysID",
+        // BuiltInLayouts.kList),
+        // new Config(), volts -> {
+        // m_frontRightMotor.setVoltage(volts);
+        // m_rearRightMotor.setVoltage(volts);
 
-                    m_frontLeftMotor.setVoltage(volts.unaryMinus());
-                    m_rearLeftMotor.setVoltage(volts.unaryMinus());
-                }, this, m_allMotors);
+        // m_frontLeftMotor.setVoltage(volts.unaryMinus());
+        // m_rearLeftMotor.setVoltage(volts.unaryMinus());
+        // }, this, m_allMotors);
 
         // put drive motors into coast mode when disabled
         RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached())
@@ -211,23 +208,16 @@ public class DriveTrain extends SubsystemBase {
 
         double newZRotation = zRotation;
 
-        if (zRotation == 0) {
-            if (m_prevZRotation != 0) {
-                m_zRotationChanged = true;
-            }
+        // if (zRotation == 0) {
+        // if (m_prevZRotation != 0) {
+        // resetRotationSetpoint();
+        // }
 
-            if (m_zRotationChanged && Math.abs(Units.degreesToRadians(m_gyro.getRate())) < 0.05) {
-                resetRotationSetpoint();
-            }
-
-            if (!m_zRotationChanged) {
-                // continuously adjust for potential drift
-                newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
-                        m_rotationSetpoint.getRadians());
-            }
-        } else {
-            m_zRotationChanged = false;
-        }
+        // // continuously adjust for potential drift
+        // newZRotation =
+        // m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
+        // m_rotationSetpoint.getRadians());
+        // }
 
         m_prevZRotation = zRotation;
 
@@ -368,8 +358,6 @@ public class DriveTrain extends SubsystemBase {
      * Resets the current rotation setpoint to the current rotation.
      */
     private void resetRotationSetpoint() {
-        m_zRotationChanged = false;
-
         m_rotationSetpoint = m_gyro.getRotation2d();
         m_rotationController.reset();
     }

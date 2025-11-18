@@ -256,11 +256,11 @@ public final class Constants {
         public static final double kHoldSpeed = 0.3;
 
         // speed while intaking
-        public static final double kIntakeSpeed = 0.5;
+        public static final double kIntakeSpeed = 0.4;
 
         // speeds for shooting
-        public static final double kShootSpeed = 0.4;
-        public static final double kShootRotationOffset = 0.5;
+        public static final double kShootSpeed = 0.5;
+        public static final double kShootRotationOffset = 0.3;
 
         // tolerance for intaking velocity
         public static final double kIntakeVelocityTolerance = 0.03;

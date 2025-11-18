@@ -109,17 +109,17 @@ public class RobotContainer {
      */
     private void configureNamedCommands() {
         NamedCommands.registerCommand("Zero Arm", m_arm.goToAngle(Rotation2d.kZero, true));
-        NamedCommands.registerCommand("Elevator L1", m_elevator.goToHeight(31, true));
+        NamedCommands.registerCommand("Elevator L1", m_elevator.goToHeight(31, true)); // orginally 31
         NamedCommands.registerCommand("Elevator Zero", m_elevator.goToHeight(0, true));
 
         NamedCommands.registerCommand("Drop",
                 m_intake.shootStraight().withTimeout(1.5));
 
         NamedCommands.registerCommand("Grab",
-                m_intake.intake().withTimeout(1.5));
+                m_intake.intake().withTimeout(1.0));
     }
 
-    /**
+    /** 
      * Gets the {@link Command} to run in autonomous.
      */
     public Command getAutonomousCommand() {
