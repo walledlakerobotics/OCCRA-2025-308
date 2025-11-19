@@ -79,11 +79,6 @@ public class RobotContainer {
         m_driverController.a()
                 .onTrue(m_driveTrain.resetFieldRelative());
 
-        m_coDriverController.a()
-                .onTrue(m_arm.goToAngle(ArmConstants.kIntakeAngle));
-        m_coDriverController.b()
-                .onTrue(m_arm.goToAngle(Rotation2d.kZero));
-
         m_coDriverController.povUp()
                 .onTrue(m_elevator.goToVelocity(ElevatorConstants.kElevatorManualSpeed))
                 .onFalse(m_elevator.goToVelocity(0));
@@ -111,6 +106,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Zero Arm", m_arm.goToAngle(Rotation2d.kZero, true));
         NamedCommands.registerCommand("Elevator L1", m_elevator.goToHeight(31, true)); // orginally 31
         NamedCommands.registerCommand("Elevator Zero", m_elevator.goToHeight(0, true));
+        NamedCommands.registerCommand("Reset Elevator", m_elevator.zeroEncoder());
 
         NamedCommands.registerCommand("Drop",
                 m_intake.shootStraight().withTimeout(1.5));
