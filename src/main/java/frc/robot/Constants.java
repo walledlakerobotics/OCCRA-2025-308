@@ -160,7 +160,7 @@ public final class Constants {
         /** The D for the elevator PID. */
         public static final double kElevatorD = 0.0;
         /** The gravity feed forward for the elevator. */
-        public static final double kElevatorG = 0.035;
+        public static final double kElevatorG = 0.03;
         // current limit
         public static final int kSmartCurrentLimit = 30;
 
@@ -239,12 +239,12 @@ public final class Constants {
         }
 
         // ids of the motors
-        public static final int kIntakeLeftMotorId = CANIDs.secondaryMotor(3);
-        public static final int kIntakeRightMotorId = CANIDs.secondaryMotor(2);
+        public static final int kIntakeLeftMotorId = CANIDs.secondaryMotor(2);
+        public static final int kIntakeRightMotorId = CANIDs.secondaryMotor(3);
 
         // whether to invert the motors
-        public static final boolean kLeftMotorInverted = false;
-        public static final boolean kRightMotorInverted = true;
+        public static final boolean kLeftMotorInverted = true;
+        public static final boolean kRightMotorInverted = false;
 
         // current limit of the motors
         public static final int kSmartCurrentLimit = 30;
