@@ -147,7 +147,8 @@ public class DriveTrain extends SubsystemBase {
         m_driveTab.add("Field", m_field);
 
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
-                speeds -> drive(speeds, false), AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
+                speeds -> drive(speeds, false), AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false,
+                this);
 
         // Utils.configureSysID(m_driveTab.getLayout("Linear SysID",
         // BuiltInLayouts.kList),
@@ -208,16 +209,15 @@ public class DriveTrain extends SubsystemBase {
 
         double newZRotation = zRotation;
 
-        // if (zRotation == 0) {
-        // if (m_prevZRotation != 0) {
-        // resetRotationSetpoint();
-        // }
+        if (zRotation == 0) {
+            if (m_prevZRotation != 0) {
+                resetRotationSetpoint();
+            }
 
-        // // continuously adjust for potential drift
-        // newZRotation =
-        // m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
-        // m_rotationSetpoint.getRadians());
-        // }
+            // continuously adjust for potential drift
+            newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
+                    m_rotationSetpoint.getRadians());
+        }
 
         m_prevZRotation = zRotation;
 
@@ -242,7 +242,8 @@ public class DriveTrain extends SubsystemBase {
      * Drives the robot based on robot relative {@link ChassisSpeeds}.
      * 
      * @param chassisSpeeds The ChassisSpeeds object.
-     * @param useMaxMotion Whether or not to use REV Max Motion to limit acceleration. Defaults to true.
+     * @param useMaxMotion  Whether or not to use REV Max Motion to limit
+     *                      acceleration. Defaults to true.
      */
     public void drive(ChassisSpeeds chassisSpeeds, boolean useMaxMotion) {
         MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(chassisSpeeds);
@@ -281,7 +282,7 @@ public class DriveTrain extends SubsystemBase {
     public Command drive(DoubleSupplier xSpeedSupplier, DoubleSupplier ySpeedSupplier,
             DoubleSupplier zRotationSupplier, BooleanSupplier fieldRelativeSupplier) {
         SlewRateLimiter xLimter = new SlewRateLimiter(2.0);
-        SlewRateLimiter yLimter = new SlewRateLimiter(2.0);
+        SlewRateLimiter yLimter = new SlewRateLimiter(4.0);
         SlewRateLimiter rotationLimter = new SlewRateLimiter(2.0);
 
         return runOnce(this::resetRotationSetpoint).andThen(run(() -> {
