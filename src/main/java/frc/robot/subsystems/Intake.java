@@ -50,9 +50,9 @@ public class Intake extends SubsystemBase {
                 });
     }
 
-    public Command shootLeft() {
+    public Command shootRight() {
         return runOnce(() -> {
-            m_leftMotor.set(-IntakeConstants.kShootSpeed + IntakeConstants.kShootRotationOffset);
+            m_leftMotor.set(0);
             m_rightMotor.set(-IntakeConstants.kShootSpeed);
         })
                 .andThen(Commands.idle(this))
@@ -62,14 +62,14 @@ public class Intake extends SubsystemBase {
                 });
     }
 
-    public Command shootRight() {
+    public Command shootLeft() {
         return runOnce(() -> {
             m_leftMotor.set(-IntakeConstants.kShootSpeed);
-            m_rightMotor.set(-IntakeConstants.kShootSpeed + IntakeConstants.kShootRotationOffset);
+            m_rightMotor.set(0);
         })
                 .andThen(Commands.idle(this))
                 .finallyDo(() -> {
-                    m_leftMotor.set(0); 
+                    m_leftMotor.set(0);
                     m_rightMotor.set(0);
                 });
     }
