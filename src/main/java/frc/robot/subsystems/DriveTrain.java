@@ -147,7 +147,7 @@ public class DriveTrain extends SubsystemBase {
         m_driveTab.add("Field", m_field);
 
         AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
-                speeds -> drive(speeds, false), AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false,
+                this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false,
                 this);
 
         // Utils.configureSysID(m_driveTab.getLayout("Linear SysID",
@@ -235,28 +235,15 @@ public class DriveTrain extends SubsystemBase {
      * @param chassisSpeeds The ChassisSpeeds object.
      */
     public void drive(ChassisSpeeds chassisSpeeds) {
-        drive(chassisSpeeds, true);
-    }
-
-    /**
-     * Drives the robot based on robot relative {@link ChassisSpeeds}.
-     * 
-     * @param chassisSpeeds The ChassisSpeeds object.
-     * @param useMaxMotion  Whether or not to use REV Max Motion to limit
-     *                      acceleration. Defaults to true.
-     */
-    public void drive(ChassisSpeeds chassisSpeeds, boolean useMaxMotion) {
         MecanumDriveWheelSpeeds wheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(chassisSpeeds);
 
-        ControlType controlType = useMaxMotion ? ControlType.kMAXMotionVelocityControl : ControlType.kVelocity;
+        m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
 
-        m_frontLeftClosedLoop.setReference(wheelSpeeds.frontLeftMetersPerSecond, controlType);
+        m_rearLeftClosedLoop.setReference(wheelSpeeds.rearLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
 
-        m_rearLeftClosedLoop.setReference(wheelSpeeds.rearLeftMetersPerSecond, controlType);
+        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond, ControlType.kMAXMotionVelocityControl);
 
-        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond, controlType);
-
-        m_rearRightClosedLoop.setReference(wheelSpeeds.rearRightMetersPerSecond, controlType);
+        m_rearRightClosedLoop.setReference(wheelSpeeds.rearRightMetersPerSecond, ControlType.kMAXMotionVelocityControl);
     }
 
     /**
@@ -362,8 +349,8 @@ public class DriveTrain extends SubsystemBase {
      * @param pose The Pose2d object.
      */
     public void resetOdometry(Pose2d pose) {
-        resetFieldRelative();
         m_odometry.resetPosition(m_gyro.getRotation2d(), getWheelPositions(), pose);
+        resetFieldRelative(pose.getRotation());
     }
 
     /**
@@ -393,20 +380,28 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
-     * Creates a {@link Command} that resets the drive train's field relative
-     * controls offset.
+     * Creates a {@link Command} that resets the drive train's field relative controls
+     * offset.
      * 
      * @return The command.
      */
     public Command resetFieldRelative() {
-        return Commands.runOnce(() -> {
-            if (DriverStation.isFMSAttached()) {
-                m_fieldRelativeOffset = Rotation2d.kZero;
-                return;
-            }
+        return runOnce(() -> resetFieldRelative(Rotation2d.kZero))
+            .ignoringDisable(true);
+    }
 
-            m_fieldRelativeOffset = m_gyro.getRotation2d();
-        }).ignoringDisable(true);
+    /**
+     * Resets the drive train's field relative controls offset.
+     * 
+     * @param heading The heading to use for field relative as a {@link Rotation2d}.
+     */
+    public void resetFieldRelative(Rotation2d heading) {
+        if (DriverStation.isFMSAttached()) {
+            m_fieldRelativeOffset = Rotation2d.kZero;
+            return;
+        }
+
+        m_fieldRelativeOffset = m_gyro.getRotation2d().minus(heading);
     }
 
     /**
