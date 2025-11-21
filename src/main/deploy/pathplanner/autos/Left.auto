@@ -42,7 +42,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Drop"
+                  "name": "Shoot"
                 }
               },
               {
@@ -52,7 +52,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -96,7 +96,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Grab"
+            "name": "Intake"
           }
         },
         {
@@ -138,7 +138,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Drop"
+                  "name": "Shoot"
                 }
               },
               {
@@ -148,19 +148,44 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 0.5
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "parallel",
                       "data": {
-                        "pathName": "Left End"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Left Pull Back"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Elevator Zero"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Pick Up 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         }
       ]
