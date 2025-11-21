@@ -7,6 +7,10 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableObject;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -83,12 +87,6 @@ public class DriveTrain extends SubsystemBase {
 
     private Rotation2d m_fieldRelativeOffset = Rotation2d.kZero;
 
-    private Rotation2d m_rotationSetpoint = Rotation2d.kZero;
-    private PIDController m_rotationController = new PIDController(DriveConstants.kDriftCorrectionP,
-            DriveConstants.kDriftCorrectionI,
-            DriveConstants.kDriftCorrectionD);
-    private double m_prevZRotation = 1;
-
     private ShuffleboardTab m_driveTab = Shuffleboard.getTab("Drive Train");
 
     /**
@@ -98,23 +96,16 @@ public class DriveTrain extends SubsystemBase {
         SparkMaxConfig config = new SparkMaxConfig();
 
         // sets the idle mode, the smart current limit, and the inversion
-        config
-                .smartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps)
-                .idleMode(DriveConstants.kMotorIdleMode);
+        config.smartCurrentLimit(DriveConstants.kSmartCurrentLimitAmps).idleMode(DriveConstants.kMotorIdleMode);
 
         // sets the PID
-        config.closedLoop
-                .p(DriveConstants.kVelocityP)
-                .i(DriveConstants.kVelocityI)
-                .d(DriveConstants.kVelocityD);
+        config.closedLoop.p(DriveConstants.kVelocityP).i(DriveConstants.kVelocityI).d(DriveConstants.kVelocityD);
 
         // sets max acceleration
-        config.closedLoop.maxMotion
-                .maxAcceleration(DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+        config.closedLoop.maxMotion.maxAcceleration(DriveConstants.kMaxAccelerationMetersPerSecondSquared);
 
         // sets encoder conversion factors
-        config.encoder
-                .positionConversionFactor(DriveConstants.kRotationsToMeters)
+        config.encoder.positionConversionFactor(DriveConstants.kRotationsToMeters)
                 .velocityConversionFactor(DriveConstants.KRotationsPerMinuteToMetersPerSecond);
 
         // left side motors
@@ -146,9 +137,8 @@ public class DriveTrain extends SubsystemBase {
 
         m_driveTab.add("Field", m_field);
 
-        AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds,
-                this::drive, AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false,
-                this);
+        AutoBuilder.configure(m_odometry::getPoseMeters, this::resetOdometry, this::getChassisSpeeds, this::drive,
+                AutoConstants.kAutoController, AutoConstants.kRobotConfig, () -> false, this);
 
         // Utils.configureSysID(m_driveTab.getLayout("Linear SysID",
         // BuiltInLayouts.kList),
@@ -169,22 +159,19 @@ public class DriveTrain extends SubsystemBase {
         // }, this, m_allMotors);
 
         // put drive motors into coast mode when disabled
-        RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached())
-                .onTrue(setIdleMode(IdleMode.kCoast))
+        RobotModeTriggers.disabled().and(() -> !DriverStation.isFMSAttached()).onTrue(setIdleMode(IdleMode.kCoast))
                 .onFalse(setIdleMode(IdleMode.kBrake));
-
-        m_rotationController.enableContinuousInput(0, 2 * Math.PI);
     }
 
     /**
      * Drives the robot using the given speeds.
      * 
-     * @param xSpeed    The robot's speed along the X axis [-1, 1].
-     *                  Forward is positive.
-     * @param ySpeed    The robot's speed along the Y axis [-1, 1].
-     *                  Left is positive.
-     * @param zRotation The normalized curvature [-1, 1].
-     *                  Counterclockwise is positive.
+     * @param xSpeed    The robot's speed along the X axis [-1, 1]. Forward is
+     *                  positive.
+     * @param ySpeed    The robot's speed along the Y axis [-1, 1]. Left is
+     *                  positive.
+     * @param zRotation The normalized curvature [-1, 1]. Counterclockwise is
+     *                  positive.
      */
     public void drive(double xSpeed, double ySpeed, double zRotation) {
         drive(xSpeed, ySpeed, zRotation, true);
@@ -193,35 +180,17 @@ public class DriveTrain extends SubsystemBase {
     /**
      * Drives the robot using the given speeds.
      * 
-     * @param xSpeed        The robot's speed along the X axis [-1, 1].
+     * @param xSpeed        The robot's speed along the X axis in meters per second.
      *                      Forward is positive.
-     * @param ySpeed        The robot's speed along the Y axis [-1, 1].
+     * @param ySpeed        The robot's speed along the Y axis in meters per second.
      *                      Left is positive.
-     * @param zRotation     The normalized curvature [-1, 1].
+     * @param zRotation     The normalized curvature in radians per second.
      *                      Counterclockwise is positive.
      * @param fieldRelative Whether or not to use field relative controls. Defaults
      *                      to true.
      */
     public void drive(double xSpeed, double ySpeed, double zRotation, boolean fieldRelative) {
-        xSpeed *= DriveConstants.kMaxForwardSpeedMetersPerSecond;
-        ySpeed *= DriveConstants.kMaxStrafeSpeedMetersPerSecond;
-        zRotation *= DriveConstants.kMaxRotationSpeedRadiansPerSecond;
-
-        double newZRotation = zRotation;
-
-        if (zRotation == 0) {
-            if (m_prevZRotation != 0) {
-                resetRotationSetpoint();
-            }
-
-            // continuously adjust for potential drift
-            newZRotation = m_rotationController.calculate(m_gyro.getRotation2d().getRadians(),
-                    m_rotationSetpoint.getRadians());
-        }
-
-        m_prevZRotation = zRotation;
-
-        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, newZRotation);
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, zRotation);
 
         if (fieldRelative)
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getFieldRelativeHeading());
@@ -241,7 +210,8 @@ public class DriveTrain extends SubsystemBase {
 
         m_rearLeftClosedLoop.setReference(wheelSpeeds.rearLeftMetersPerSecond, ControlType.kMAXMotionVelocityControl);
 
-        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond, ControlType.kMAXMotionVelocityControl);
+        m_frontRightClosedLoop.setReference(wheelSpeeds.frontRightMetersPerSecond,
+                ControlType.kMAXMotionVelocityControl);
 
         m_rearRightClosedLoop.setReference(wheelSpeeds.rearRightMetersPerSecond, ControlType.kMAXMotionVelocityControl);
     }
@@ -251,28 +221,36 @@ public class DriveTrain extends SubsystemBase {
      * inputs.
      * 
      * @param xSpeedSupplier    Supplies the axis value for forward/backward
-     *                          movement in the range [-1, 1]. Back is
-     *                          positive. It will be transformed based on the
-     *                          sensitivity,
+     *                          movement in the range [-1, 1]. Back is positive. It
+     *                          will be transformed based on the sensitivity,
      *                          deadband, and multiplier values.
-     * @param ySpeedSupplier    Supplies the axis value for left/right
-     *                          movement in the range [-1, 1]. Right is positive.
-     *                          It will be transformed based on the sensitivity,
-     *                          deadband, and multiplier values.
+     * @param ySpeedSupplier    Supplies the axis value for left/right movement in
+     *                          the range [-1, 1]. Right is positive. It will be
+     *                          transformed based on the sensitivity, deadband, and
+     *                          multiplier values.
      * @param zRotationSupplier Supplies the axis value for rotation in the range
      *                          [-1, 1]. Clockwise is positive. It will be
-     *                          transformed based on the sensitivity,
-     *                          deadband, and multiplier values.
+     *                          transformed based on the sensitivity, deadband, and
+     *                          multiplier values.
      * 
      * @return A command that drives the robot based on joystick inputs.
      */
-    public Command drive(DoubleSupplier xSpeedSupplier, DoubleSupplier ySpeedSupplier,
-            DoubleSupplier zRotationSupplier, BooleanSupplier fieldRelativeSupplier) {
+    public Command drive(DoubleSupplier xSpeedSupplier, DoubleSupplier ySpeedSupplier, DoubleSupplier zRotationSupplier,
+            BooleanSupplier fieldRelativeSupplier) {
         SlewRateLimiter xLimter = new SlewRateLimiter(2.0);
         SlewRateLimiter yLimter = new SlewRateLimiter(4.0);
         SlewRateLimiter rotationLimter = new SlewRateLimiter(2.0);
 
-        return runOnce(this::resetRotationSetpoint).andThen(run(() -> {
+        Mutable<Rotation2d> rotationSetpoint = new MutableObject<>(Rotation2d.kZero);
+        @SuppressWarnings("resource")
+        PIDController rotationController = new PIDController(DriveConstants.kDriftCorrectionP,
+                DriveConstants.kDriftCorrectionI, DriveConstants.kDriftCorrectionD);
+        MutableDouble prevZRotation = new MutableDouble(1.0);
+
+        return runOnce(() -> {
+            rotationSetpoint.setValue(m_gyro.getRotation2d());
+            rotationController.reset();
+        }).andThen(run(() -> {
             double xSpeed = -xSpeedSupplier.getAsDouble();
             double ySpeed = -ySpeedSupplier.getAsDouble();
             double zRotation = -zRotationSupplier.getAsDouble();
@@ -290,7 +268,26 @@ public class DriveTrain extends SubsystemBase {
             ySpeed = yLimter.calculate(ySpeed);
             zRotation = rotationLimter.calculate(zRotation);
 
-            drive(xSpeed, ySpeed, zRotation, fieldRelativeSupplier.getAsBoolean());
+            xSpeed *= DriveConstants.kMaxForwardSpeedMetersPerSecond;
+            ySpeed *= DriveConstants.kMaxStrafeSpeedMetersPerSecond;
+            zRotation *= DriveConstants.kMaxRotationSpeedRadiansPerSecond;
+
+            double adjustedZRotation = zRotation;
+
+            if (zRotation == 0) {
+                if (prevZRotation.getValue() != 0) {
+                    rotationSetpoint.setValue(m_gyro.getRotation2d());
+                    rotationController.reset();
+                }
+
+                // continuously adjust for potential drift
+                adjustedZRotation = rotationController.calculate(m_gyro.getRotation2d().getRadians(),
+                        rotationSetpoint.getValue().getRadians());
+            }
+
+            prevZRotation.setValue(zRotation);
+
+            drive(xSpeed, ySpeed, adjustedZRotation, fieldRelativeSupplier.getAsBoolean());
         }));
     }
 
@@ -298,7 +295,6 @@ public class DriveTrain extends SubsystemBase {
      * Stops the robot.
      */
     public void stopDrive() {
-        resetRotationSetpoint();
         drive(0, 0, 0, false);
     }
 
@@ -309,11 +305,8 @@ public class DriveTrain extends SubsystemBase {
      *         speeds in meters per second.
      */
     public MecanumDriveWheelSpeeds getWheelSpeeds() {
-        return new MecanumDriveWheelSpeeds(
-                m_frontLeftEncoder.getVelocity(),
-                m_frontRightEncoder.getVelocity(),
-                m_rearLeftEncoder.getVelocity(),
-                m_rearRightEncoder.getVelocity());
+        return new MecanumDriveWheelSpeeds(m_frontLeftEncoder.getVelocity(), m_frontRightEncoder.getVelocity(),
+                m_rearLeftEncoder.getVelocity(), m_rearRightEncoder.getVelocity());
     }
 
     /**
@@ -336,11 +329,8 @@ public class DriveTrain extends SubsystemBase {
      *         positions in meters.
      */
     public MecanumDriveWheelPositions getWheelPositions() {
-        return new MecanumDriveWheelPositions(
-                m_frontLeftEncoder.getPosition(),
-                m_frontRightEncoder.getPosition(),
-                m_rearLeftEncoder.getPosition(),
-                m_rearRightEncoder.getPosition());
+        return new MecanumDriveWheelPositions(m_frontLeftEncoder.getPosition(), m_frontRightEncoder.getPosition(),
+                m_rearLeftEncoder.getPosition(), m_rearRightEncoder.getPosition());
     }
 
     /**
@@ -351,14 +341,6 @@ public class DriveTrain extends SubsystemBase {
     public void resetOdometry(Pose2d pose) {
         m_odometry.resetPosition(m_gyro.getRotation2d(), getWheelPositions(), pose);
         resetFieldRelative(pose.getRotation());
-    }
-
-    /**
-     * Resets the current rotation setpoint to the current rotation.
-     */
-    private void resetRotationSetpoint() {
-        m_rotationSetpoint = m_gyro.getRotation2d();
-        m_rotationController.reset();
     }
 
     /**
@@ -380,14 +362,13 @@ public class DriveTrain extends SubsystemBase {
     }
 
     /**
-     * Creates a {@link Command} that resets the drive train's field relative controls
-     * offset.
+     * Creates a {@link Command} that resets the drive train's field relative
+     * controls offset.
      * 
      * @return The command.
      */
     public Command resetFieldRelative() {
-        return runOnce(() -> resetFieldRelative(Rotation2d.kZero))
-            .ignoringDisable(true);
+        return runOnce(() -> resetFieldRelative(Rotation2d.kZero)).ignoringDisable(true);
     }
 
     /**
