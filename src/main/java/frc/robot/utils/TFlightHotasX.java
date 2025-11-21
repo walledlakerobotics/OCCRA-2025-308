@@ -4,14 +4,15 @@
 
 package frc.robot.utils;
 
-import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 
 /**
- * Handle input from a Thrustmaster T-Flight Hotas X connected to the Driver Station.
+ * Handle input from a Thrustmaster T-Flight Hotas X connected to the Driver
+ * Station.
  *
  * <p>
  * This class handles Flight Hotas X input that comes from the Driver Station.
@@ -175,9 +176,8 @@ public class TFlightHotasX extends GenericHID {
      * @param threshold the negative of the maximum axis value for the returned
      *                  {@link BooleanEvent} to be true. This value should be in the
      *                  range [0, 1] where 0 is the unpressed state of the axis.
-     * @return an event instance that is true when the rockers's axis is below
-     *         the negative of the provided threshold, attached to the given event
-     *         loop.
+     * @return an event instance that is true when the rockers's axis is below the
+     *         negative of the provided threshold, attached to the given event loop.
      */
     public BooleanEvent getLeftRockerTrigger(double threshold, EventLoop loop) {
         return axisLessThan(Axis.kRocker.value, -threshold, loop);
@@ -188,9 +188,8 @@ public class TFlightHotasX extends GenericHID {
      * returned trigger will be true when the axis value is less than -0.5.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance that is true when the rockers's axis is below
-     *         the negative of the provided threshold, attached to the given event
-     *         loop.
+     * @return an event instance that is true when the rockers's axis is below the
+     *         negative of the provided threshold, attached to the given event loop.
      */
     public BooleanEvent getLeftRockerTrigger(EventLoop loop) {
         return getLeftRockerTrigger(0.5, loop);
@@ -205,8 +204,8 @@ public class TFlightHotasX extends GenericHID {
      * @param threshold the minimum axis value for the returned {@link BooleanEvent}
      *                  to be true. This value should be in the range [0, 1] where 0
      *                  is the unpressed state of the axis.
-     * @return an event instance that is true when the rockers's axis exceeds
-     *         the provided threshold, attached to the given event loop.
+     * @return an event instance that is true when the rockers's axis exceeds the
+     *         provided threshold, attached to the given event loop.
      */
     public BooleanEvent getRightRockerTrigger(double threshold, EventLoop loop) {
         return axisGreaterThan(Axis.kRocker.value, threshold, loop);
@@ -214,12 +213,11 @@ public class TFlightHotasX extends GenericHID {
 
     /**
      * Constructs an event instance around the axis value of the rocker. The
-     * returned trigger will be true when the axis value is greater than
-     * 0.5.
+     * returned trigger will be true when the axis value is greater than 0.5.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance that is true when the rockers's axis exceeds
-     *         the provided threshold, attached to the given event loop.
+     * @return an event instance that is true when the rockers's axis exceeds the
+     *         provided threshold, attached to the given event loop.
      */
     public BooleanEvent getRightRockerTrigger(EventLoop loop) {
         return getLeftRockerTrigger(0.5, loop);
@@ -484,8 +482,8 @@ public class TFlightHotasX extends GenericHID {
      * Constructs an event instance around the 5 button's digital signal.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance representing the 5 button's digital signal
-     *         attached to the given loop.
+     * @return an event instance representing the 5 button's digital signal attached
+     *         to the given loop.
      */
     public BooleanEvent B5(EventLoop loop) {
         return button(Button.k5.value, loop);
@@ -522,8 +520,8 @@ public class TFlightHotasX extends GenericHID {
      * Constructs an event instance around the 6 button's digital signal.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance representing the 6 button's digital signal
-     *         attached to the given loop.
+     * @return an event instance representing the 6 button's digital signal attached
+     *         to the given loop.
      */
     public BooleanEvent B6(EventLoop loop) {
         return button(Button.k6.value, loop);
@@ -560,8 +558,8 @@ public class TFlightHotasX extends GenericHID {
      * Constructs an event instance around the 7 button's digital signal.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance representing the 7 button's digital signal
-     *         attached to the given loop.
+     * @return an event instance representing the 7 button's digital signal attached
+     *         to the given loop.
      */
     public BooleanEvent B7(EventLoop loop) {
         return button(Button.k7.value, loop);
@@ -598,8 +596,8 @@ public class TFlightHotasX extends GenericHID {
      * Constructs an event instance around the 8 button's digital signal.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return an event instance representing the 8 button's digital signal
-     *         attached to the given loop.
+     * @return an event instance representing the 8 button's digital signal attached
+     *         to the given loop.
      */
     public BooleanEvent B8(EventLoop loop) {
         return button(Button.k8.value, loop);

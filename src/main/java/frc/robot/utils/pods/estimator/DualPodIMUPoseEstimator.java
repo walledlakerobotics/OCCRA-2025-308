@@ -46,17 +46,9 @@ public class DualPodIMUPoseEstimator extends PoseEstimator<DualPodIMUPositions> 
      * @param wheelPositions    The distances driven by each wheel.
      * @param initialPoseMeters The starting pose estimate.
      */
-    public DualPodIMUPoseEstimator(
-            DualPodIMUKinematics kinematics,
-            Rotation2d gyroAngle,
-            DualPodIMUPositions wheelPositions,
-            Pose2d initialPoseMeters) {
-        this(
-                kinematics,
-                gyroAngle,
-                wheelPositions,
-                initialPoseMeters,
-                VecBuilder.fill(0.1, 0.1, 0.1),
+    public DualPodIMUPoseEstimator(DualPodIMUKinematics kinematics, Rotation2d gyroAngle,
+            DualPodIMUPositions wheelPositions, Pose2d initialPoseMeters) {
+        this(kinematics, gyroAngle, wheelPositions, initialPoseMeters, VecBuilder.fill(0.1, 0.1, 0.1),
                 VecBuilder.fill(0.45, 0.45, 0.45));
     }
 
@@ -78,17 +70,10 @@ public class DualPodIMUPoseEstimator extends PoseEstimator<DualPodIMUPositions> 
      *                                 these numbers to trust the vision pose
      *                                 measurement less.
      */
-    public DualPodIMUPoseEstimator(
-            DualPodIMUKinematics kinematics,
-            Rotation2d gyroAngle,
-            DualPodIMUPositions wheelPositions,
-            Pose2d initialPoseMeters,
-            Matrix<N3, N1> stateStdDevs,
+    public DualPodIMUPoseEstimator(DualPodIMUKinematics kinematics, Rotation2d gyroAngle,
+            DualPodIMUPositions wheelPositions, Pose2d initialPoseMeters, Matrix<N3, N1> stateStdDevs,
             Matrix<N3, N1> visionMeasurementStdDevs) {
-        super(
-                kinematics,
-                new DualPodIMUOdometry(kinematics, gyroAngle, wheelPositions, initialPoseMeters),
-                stateStdDevs,
-                visionMeasurementStdDevs);
+        super(kinematics, new DualPodIMUOdometry(kinematics, gyroAngle, wheelPositions, initialPoseMeters),
+                stateStdDevs, visionMeasurementStdDevs);
     }
 }

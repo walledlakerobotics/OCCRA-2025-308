@@ -27,8 +27,8 @@ import edu.wpi.first.math.kinematics.Odometry3d;
  *
  * <p>
  * Teams can use odometry during the autonomous period for complex tasks like
- * path following. Furthermore, odometry can be used for latency compensation when using
- * computer-vision systems.
+ * path following. Furthermore, odometry can be used for latency compensation
+ * when using computer-vision systems.
  */
 public class DualPodIMUOdometry3d extends Odometry3d<DualPodIMUPositions> {
     /**
@@ -39,24 +39,19 @@ public class DualPodIMUOdometry3d extends Odometry3d<DualPodIMUPositions> {
      * @param wheelPositions    The current encoder readings.
      * @param initialPoseMeters The starting position of the robot on the field.
      */
-    public DualPodIMUOdometry3d(
-            DualPodIMUKinematics kinematics,
-            Rotation3d gyroAngle,
-            DualPodIMUPositions wheelPositions,
-            Pose3d initialPoseMeters) {
+    public DualPodIMUOdometry3d(DualPodIMUKinematics kinematics, Rotation3d gyroAngle,
+            DualPodIMUPositions wheelPositions, Pose3d initialPoseMeters) {
         super(kinematics, gyroAngle, wheelPositions, initialPoseMeters);
     }
 
     /**
      * Constructs a DualPodIMUOdometry3d object with the default pose at the origin.
      *
-     * @param kinematics        The kinematics of the odometry pod system.
-     * @param gyroAngle         The angle reported by the gyroscope.
-     * @param wheelPositions    The current encoder readings.
+     * @param kinematics     The kinematics of the odometry pod system.
+     * @param gyroAngle      The angle reported by the gyroscope.
+     * @param wheelPositions The current encoder readings.
      */
-    public DualPodIMUOdometry3d(
-            DualPodIMUKinematics kinematics,
-            Rotation3d gyroAngle,
+    public DualPodIMUOdometry3d(DualPodIMUKinematics kinematics, Rotation3d gyroAngle,
             DualPodIMUPositions wheelPositions) {
         super(kinematics, gyroAngle, wheelPositions, Pose3d.kZero);
     }

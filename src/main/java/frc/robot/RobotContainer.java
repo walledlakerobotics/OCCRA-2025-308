@@ -23,12 +23,10 @@ import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
 
@@ -70,32 +68,23 @@ public class RobotContainer {
      * Flight joysticks}.
      */
     private void configureBindings() {
-        m_driveTrain.setDefaultCommand(
-                m_driveTrain.drive(m_driverController::getLeftY, m_driverController::getLeftX,
-                        m_driverController::getRightX,
-                        () -> !m_driverController.getHID().getLeftBumperButton()));
+        m_driveTrain.setDefaultCommand(m_driveTrain.drive(m_driverController::getLeftY, m_driverController::getLeftX,
+                m_driverController::getRightX, () -> !m_driverController.getHID().getLeftBumperButton()));
 
-        m_driverController.a()
-                .onTrue(m_driveTrain.resetFieldRelative());
+        m_driverController.a().onTrue(m_driveTrain.resetFieldRelative());
 
-        m_coDriverController.povUp()
-                .onTrue(m_elevator.goToVelocity(ElevatorConstants.kElevatorManualSpeed))
+        m_coDriverController.povUp().onTrue(m_elevator.goToVelocity(ElevatorConstants.kElevatorManualSpeed))
                 .onFalse(m_elevator.goToVelocity(0));
-        m_coDriverController.povDown()
-                .onTrue(m_elevator.goToVelocity(-ElevatorConstants.kElevatorManualSpeed))
+        m_coDriverController.povDown().onTrue(m_elevator.goToVelocity(-ElevatorConstants.kElevatorManualSpeed))
                 .onFalse(m_elevator.goToVelocity(0));
 
-        m_coDriverController.leftBumper()
-                .whileTrue(m_intake.shootStraight());
+        m_coDriverController.leftBumper().whileTrue(m_intake.shootStraight());
 
-        m_coDriverController.rightBumper()
-                .whileTrue(m_intake.intake());
+        m_coDriverController.rightBumper().whileTrue(m_intake.intake());
 
-        m_coDriverController.leftTrigger()
-                .whileTrue(m_intake.shootLeft());
+        m_coDriverController.leftTrigger().whileTrue(m_intake.shootLeft());
 
-        m_coDriverController.rightTrigger()
-                .whileTrue(m_intake.shootRight());
+        m_coDriverController.rightTrigger().whileTrue(m_intake.shootRight());
     }
 
     /**
@@ -107,11 +96,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("Elevator Zero", m_elevator.goToHeight(0, true));
         NamedCommands.registerCommand("Reset Elevator", m_elevator.zeroEncoder());
 
-        NamedCommands.registerCommand("Shoot",
-                m_intake.shootStraight().withTimeout(1.0));
+        NamedCommands.registerCommand("Shoot", m_intake.shootStraight().withTimeout(1.0));
 
-        NamedCommands.registerCommand("Intake",
-                m_intake.intakeHold().withTimeout(1.0));
+        NamedCommands.registerCommand("Intake", m_intake.intakeHold().withTimeout(1.0));
     }
 
     /**

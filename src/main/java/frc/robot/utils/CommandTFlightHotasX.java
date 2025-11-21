@@ -43,9 +43,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the R1 button's digital signal.
      *
      * @return a Trigger instance representing the R1 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #R1(EventLoop)
      */
     public Trigger R1() {
@@ -67,9 +66,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the R2 button's digital signal.
      *
      * @return a Trigger instance representing the R2 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #R2(EventLoop)
      */
     public Trigger R2() {
@@ -91,9 +89,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the R3 button's digital signal.
      *
      * @return a Trigger instance representing the R3 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #R3(EventLoop)
      */
     public Trigger R3() {
@@ -115,9 +112,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the L1 button's digital signal.
      *
      * @return a Trigger instance representing the L1 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #L1(EventLoop)
      */
     public Trigger L1() {
@@ -139,9 +135,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the L2 button's digital signal.
      *
      * @return a Trigger instance representing the L2 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #L2(EventLoop)
      */
     public Trigger L2() {
@@ -163,9 +158,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the L3 button's digital signal.
      *
      * @return a Trigger instance representing the L3 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #L3(EventLoop)
      */
     public Trigger L3() {
@@ -187,9 +181,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the 5 button's digital signal.
      *
      * @return a Trigger instance representing the 5 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #B5(EventLoop)
      */
     public Trigger B5() {
@@ -211,9 +204,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the 6 button's digital signal.
      *
      * @return a Trigger instance representing the 6 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #B6(EventLoop)
      */
     public Trigger B6() {
@@ -235,9 +227,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the 7 button's digital signal.
      *
      * @return a Trigger instance representing the 7 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #B7(EventLoop)
      */
     public Trigger B7() {
@@ -259,9 +250,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the 8 button's digital signal.
      *
      * @return a Trigger instance representing the 8 button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #B8(EventLoop)
      */
     public Trigger B8() {
@@ -283,9 +273,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the select button's digital signal.
      *
      * @return a Trigger instance representing the select button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #select(EventLoop)
      */
     public Trigger select() {
@@ -307,9 +296,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * Constructs a Trigger instance around the start button's digital signal.
      *
      * @return a Trigger instance representing the start button's digital signal
-     *         attached
-     *         to the {@link CommandScheduler#getDefaultButtonLoop() default
-     *         scheduler button loop}.
+     *         attached to the {@link CommandScheduler#getDefaultButtonLoop()
+     *         default scheduler button loop}.
      * @see #start(EventLoop)
      */
     public Trigger start() {
@@ -336,9 +324,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * @param threshold the negative of the maximum axis value for the returned
      *                  {@link Trigger} to be true. This value should be in the
      *                  range [0, 1] where 0 is the unpressed state of the axis.
-     * @return a Trigger instace that is true when the rockers's axis is below
-     *         the negative of the provided threshold, attached to the given event
-     *         loop.
+     * @return a Trigger instace that is true when the rockers's axis is below the
+     *         negative of the provided threshold, attached to the given event loop.
      */
     public Trigger getLeftRockerTrigger(double threshold, EventLoop loop) {
         return axisLessThan(TFlightHotasX.Axis.kRocker.value, -threshold, loop);
@@ -352,8 +339,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * @param threshold the negative of the maximum axis value for the returned
      *                  {@link Trigger} to be true. This value should be in the
      *                  range [0, 1] where 0 is the unpressed state of the axis.
-     * @return a Trigger instace that is true when the rockers's axis is below
-     *         the negative of the provided threshold, attached to the
+     * @return a Trigger instace that is true when the rockers's axis is below the
+     *         negative of the provided threshold, attached to the
      *         {@link CommandScheduler#getDefaultButtonLoop() default scheduler
      *         button loop}.
      */
@@ -366,8 +353,8 @@ public class CommandTFlightHotasX extends CommandGenericHID {
      * returned trigger will be true when the axis value is less than -0.5.
      * 
      * @param loop the event loop instance to attach the event to.
-     * @return a Trigger instance that is true when the rockers's axis is below
-     *         the negative of the provided threshold, attached to the
+     * @return a Trigger instance that is true when the rockers's axis is below the
+     *         negative of the provided threshold, attached to the
      *         {@link CommandScheduler#getDefaultButtonLoop() default scheduler
      *         button loop}.
      */
@@ -376,31 +363,29 @@ public class CommandTFlightHotasX extends CommandGenericHID {
     }
 
     /**
-     * Constructs a Trigger around the axis value of the rocker. The
-     * returned trigger will be true when the axis value is greater than
-     * {@code threshold}.
+     * Constructs a Trigger around the axis value of the rocker. The returned
+     * trigger will be true when the axis value is greater than {@code threshold}.
      * 
      * @param loop      the event loop instance to attach the event to.
-     * @param threshold the minimum axis value for the returned {@link Trigger}
-     *                  to be true. This value should be in the range [0, 1] where 0
-     *                  is the unpressed state of the axis.
-     * @return a Trigger instance that is true when the rockers's axis exceeds
-     *         the provided threshold, attached to the given event loop.
+     * @param threshold the minimum axis value for the returned {@link Trigger} to
+     *                  be true. This value should be in the range [0, 1] where 0 is
+     *                  the unpressed state of the axis.
+     * @return a Trigger instance that is true when the rockers's axis exceeds the
+     *         provided threshold, attached to the given event loop.
      */
     public Trigger getRightRockerTrigger(double threshold, EventLoop loop) {
         return axisGreaterThan(TFlightHotasX.Axis.kRocker.value, threshold, loop);
     }
 
     /**
-     * Constructs a Trigger around the axis value of the rocker. The
-     * returned trigger will be true when the axis value is greater than
-     * {@code threshold}.
+     * Constructs a Trigger around the axis value of the rocker. The returned
+     * trigger will be true when the axis value is greater than {@code threshold}.
      * 
-     * @param threshold the minimum axis value for the returned {@link Trigger}
-     *                  to be true. This value should be in the range [0, 1] where 0
-     *                  is the unpressed state of the axis.
-     * @return a Trigger instance that is true when the rockers's axis exceeds
-     *         the provided threshold, attached to the
+     * @param threshold the minimum axis value for the returned {@link Trigger} to
+     *                  be true. This value should be in the range [0, 1] where 0 is
+     *                  the unpressed state of the axis.
+     * @return a Trigger instance that is true when the rockers's axis exceeds the
+     *         provided threshold, attached to the
      *         {@link CommandScheduler#getDefaultButtonLoop() default scheduler
      *         button loop}.
      */
@@ -410,11 +395,10 @@ public class CommandTFlightHotasX extends CommandGenericHID {
 
     /**
      * Constructs an event instance around the axis value of the rocker. The
-     * returned trigger will be true when the axis value is greater than
-     * 0.5.
+     * returned trigger will be true when the axis value is greater than 0.5.
      * 
-     * @return an event instance that is true when the rockers's axis exceeds
-     *         the provided threshold, attached to the
+     * @return an event instance that is true when the rockers's axis exceeds the
+     *         provided threshold, attached to the
      *         {@link CommandScheduler#getDefaultButtonLoop() default scheduler
      *         button loop}.
      */

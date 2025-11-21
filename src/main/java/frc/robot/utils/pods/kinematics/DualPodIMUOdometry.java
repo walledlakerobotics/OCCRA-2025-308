@@ -23,10 +23,7 @@ public class DualPodIMUOdometry extends Odometry<DualPodIMUPositions> {
      * @param wheelPositions    The current encoder readings.
      * @param initialPoseMeters The starting position of the robot on the field.
      */
-    public DualPodIMUOdometry(
-            DualPodIMUKinematics kinematics,
-            Rotation2d gyroAngle,
-            DualPodIMUPositions wheelPositions,
+    public DualPodIMUOdometry(DualPodIMUKinematics kinematics, Rotation2d gyroAngle, DualPodIMUPositions wheelPositions,
             Pose2d initialPoseMeters) {
         super(kinematics, gyroAngle, wheelPositions, initialPoseMeters);
     }
@@ -38,9 +35,7 @@ public class DualPodIMUOdometry extends Odometry<DualPodIMUPositions> {
      * @param gyroAngle      The angle reported by the gyroscope.
      * @param wheelPositions The current encoder readings.
      */
-    public DualPodIMUOdometry(
-            DualPodIMUKinematics kinematics,
-            Rotation2d gyroAngle,
+    public DualPodIMUOdometry(DualPodIMUKinematics kinematics, Rotation2d gyroAngle,
             DualPodIMUPositions wheelPositions) {
         super(kinematics, gyroAngle, wheelPositions, Pose2d.kZero);
     }

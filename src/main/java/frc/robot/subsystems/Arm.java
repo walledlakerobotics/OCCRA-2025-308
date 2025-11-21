@@ -32,13 +32,9 @@ public class Arm extends SubsystemBase {
     private final AbsoluteEncoder m_armEncoder;
 
     /** The {@link ProfiledPIDController} for the arm motor. */
-    private final ProfiledPIDController m_angleController = new ProfiledPIDController(
-            ArmConstants.kArmP,
-            ArmConstants.kArmI,
-            ArmConstants.kArmD,
-            new TrapezoidProfile.Constraints(
-                    ArmConstants.kArmMaxSpeedRPS,
-                    ArmConstants.kArmMaxAccelerationRPSSquared));
+    private final ProfiledPIDController m_angleController = new ProfiledPIDController(ArmConstants.kArmP,
+            ArmConstants.kArmI, ArmConstants.kArmD,
+            new TrapezoidProfile.Constraints(ArmConstants.kArmMaxSpeedRPS, ArmConstants.kArmMaxAccelerationRPSSquared));
 
     /** Whether to use PID or not. */
     private boolean m_isPIDMode = true;
@@ -54,14 +50,10 @@ public class Arm extends SubsystemBase {
      */
     public Arm() {
         SparkMaxConfig config = new SparkMaxConfig();
-        config
-                .inverted(ArmConstants.kArmMotorInverted)
-                .smartCurrentLimit(ArmConstants.kSmartCurrentLimit)
+        config.inverted(ArmConstants.kArmMotorInverted).smartCurrentLimit(ArmConstants.kSmartCurrentLimit)
                 .idleMode(ArmConstants.kIdleMode);
 
-        config.absoluteEncoder
-                .inverted(ArmConstants.kArmEncoderInverted)
-                .velocityConversionFactor(1.0 / 60);
+        config.absoluteEncoder.inverted(ArmConstants.kArmEncoderInverted).velocityConversionFactor(1.0 / 60);
 
         m_armMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -81,9 +73,7 @@ public class Arm extends SubsystemBase {
     public void setAngle(Rotation2d angle) {
         m_isPIDMode = true;
 
-        m_angleController.reset(
-                getAngle().getRotations(),
-                getVelocity().getRotations());
+        m_angleController.reset(getAngle().getRotations(), getVelocity().getRotations());
 
         m_angleController.setGoal(angle.getRotations());
     }

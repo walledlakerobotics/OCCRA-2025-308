@@ -1,12 +1,12 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -34,12 +34,8 @@ public class Elevator extends SubsystemBase {
         m_elevatorMotor = new SparkMax(ElevatorConstants.kElevatorLeaderMotorId, MotorType.kBrushless);
 
         // sets PID controller
-        m_elevatorPIDController = new ProfiledPIDController(
-                ElevatorConstants.kElevatorP,
-                ElevatorConstants.kElevatorI,
-                ElevatorConstants.kElevatorD,
-                new Constraints(
-                        ElevatorConstants.kElevatorMaxSpeedMetersPerSecond,
+        m_elevatorPIDController = new ProfiledPIDController(ElevatorConstants.kElevatorP, ElevatorConstants.kElevatorI,
+                ElevatorConstants.kElevatorD, new Constraints(ElevatorConstants.kElevatorMaxSpeedMetersPerSecond,
                         ElevatorConstants.kElevatorMaxAccelerationMetersPerSecondSquared));
 
         // limit switches
@@ -48,20 +44,15 @@ public class Elevator extends SubsystemBase {
         // configure
         SparkMaxConfig config = new SparkMaxConfig();
 
-        config
-                .idleMode(ElevatorConstants.kElevatorIdleMode)
-                .smartCurrentLimit(ElevatorConstants.kSmartCurrentLimit)
+        config.idleMode(ElevatorConstants.kElevatorIdleMode).smartCurrentLimit(ElevatorConstants.kSmartCurrentLimit)
                 .inverted(ElevatorConstants.kLeaderMotorInverted);
 
-        config.encoder
-                .positionConversionFactor(ElevatorConstants.kElevatorRotationsToMeters)
+        config.encoder.positionConversionFactor(ElevatorConstants.kElevatorRotationsToMeters)
                 .velocityConversionFactor(ElevatorConstants.kElevatorRotationsPerMinuteToMetersPerSecond);
 
         m_elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        config
-                .follow(m_elevatorMotor)
-                .inverted(ElevatorConstants.kFollowerMotorInverted);
+        config.follow(m_elevatorMotor).inverted(ElevatorConstants.kFollowerMotorInverted);
 
         // gets encoder
         m_elevatorEncoder = m_elevatorMotor.getEncoder();
@@ -144,10 +135,8 @@ public class Elevator extends SubsystemBase {
      * @returns The runnable <code>Command</code>
      */
     public Command zeroElevator() {
-        return goToVelocity(-ElevatorConstants.kElevatorManualSpeed)
-                .andThen(Commands.waitUntil(() -> isAtBottom()))
-                .finallyDo(() -> stopElevator())
-                .withTimeout(0.5);
+        return goToVelocity(-ElevatorConstants.kElevatorManualSpeed).andThen(Commands.waitUntil(() -> isAtBottom()))
+                .finallyDo(() -> stopElevator()).withTimeout(0.5);
     }
 
     /**
@@ -179,9 +168,7 @@ public class Elevator extends SubsystemBase {
      * @return The runnable <code>Command</code>.
      */
     public Command goToLevel(int index, boolean endImmediately) {
-        return goToHeight(
-                ElevatorConstants.kElevatorLevelHeights[index],
-                endImmediately);
+        return goToHeight(ElevatorConstants.kElevatorLevelHeights[index], endImmediately);
     }
 
     /**

@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 /*
- *  A subsystem that controls the robot's cube intake
+ * A subsystem that controls the robot's cube intake
  */
 public class Intake extends SubsystemBase {
     private final SparkMax m_leftMotor = new SparkMax(IntakeConstants.kIntakeLeftMotorId, MotorType.kBrushless);
@@ -21,9 +21,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         SparkMaxConfig config = new SparkMaxConfig();
 
-        config
-                .idleMode(IntakeConstants.kIdleMode)
-                .smartCurrentLimit(IntakeConstants.kSmartCurrentLimit);
+        config.idleMode(IntakeConstants.kIdleMode).smartCurrentLimit(IntakeConstants.kSmartCurrentLimit);
 
         config.inverted(IntakeConstants.kLeftMotorInverted);
         m_leftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -36,59 +34,49 @@ public class Intake extends SubsystemBase {
         return runOnce(() -> {
             m_leftMotor.set(IntakeConstants.kIntakeSpeed);
             m_rightMotor.set(IntakeConstants.kIntakeSpeed);
-        })
-                .andThen(Commands.idle(this))
-                .finallyDo(() -> {
-                    m_leftMotor.set(0);
-                    m_rightMotor.set(0);
-                });
+        }).andThen(Commands.idle(this)).finallyDo(() -> {
+            m_leftMotor.set(0);
+            m_rightMotor.set(0);
+        });
     }
 
     public Command intakeHold() {
         return runOnce(() -> {
             m_leftMotor.set(IntakeConstants.kIntakeSpeed);
             m_rightMotor.set(IntakeConstants.kIntakeSpeed);
-        })
-                .andThen(Commands.idle(this))
-                .finallyDo(() -> {
-                    m_leftMotor.set(0.1);
-                    m_rightMotor.set(0.1);
-                });
+        }).andThen(Commands.idle(this)).finallyDo(() -> {
+            m_leftMotor.set(0.1);
+            m_rightMotor.set(0.1);
+        });
     }
 
     public Command shootRight() {
         return runOnce(() -> {
             m_leftMotor.set(0);
             m_rightMotor.set(-IntakeConstants.kShootSpeed);
-        })
-                .andThen(Commands.idle(this))
-                .finallyDo(() -> {
-                    m_leftMotor.set(0);
-                    m_rightMotor.set(0);
-                });
+        }).andThen(Commands.idle(this)).finallyDo(() -> {
+            m_leftMotor.set(0);
+            m_rightMotor.set(0);
+        });
     }
 
     public Command shootLeft() {
         return runOnce(() -> {
             m_leftMotor.set(-IntakeConstants.kShootSpeed);
             m_rightMotor.set(0);
-        })
-                .andThen(Commands.idle(this))
-                .finallyDo(() -> {
-                    m_leftMotor.set(0);
-                    m_rightMotor.set(0);
-                });
+        }).andThen(Commands.idle(this)).finallyDo(() -> {
+            m_leftMotor.set(0);
+            m_rightMotor.set(0);
+        });
     }
 
     public Command shootStraight() {
         return runOnce(() -> {
             m_leftMotor.set(-IntakeConstants.kShootSpeed);
             m_rightMotor.set(-IntakeConstants.kShootSpeed);
-        })
-                .andThen(Commands.idle(this))
-                .finallyDo(() -> {
-                    m_leftMotor.set(0);
-                    m_rightMotor.set(0);
-                });
+        }).andThen(Commands.idle(this)).finallyDo(() -> {
+            m_leftMotor.set(0);
+            m_rightMotor.set(0);
+        });
     }
 }

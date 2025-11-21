@@ -59,40 +59,31 @@ public class Utils {
             distances[i] = Meters.mutable(0);
         }
 
-        SysIdRoutine sysIdRoutine = new SysIdRoutine(config,
-                new SysIdRoutine.Mechanism(driveAtVoltage, log -> {
-                    for (int i = 0; i < encoders.length; i++) {
-                        SparkMax motor = motors[i];
-                        RelativeEncoder encoder = encoders[i];
+        SysIdRoutine sysIdRoutine = new SysIdRoutine(config, new SysIdRoutine.Mechanism(driveAtVoltage, log -> {
+            for (int i = 0; i < encoders.length; i++) {
+                SparkMax motor = motors[i];
+                RelativeEncoder encoder = encoders[i];
 
-                        log.motor("drive-motor-" + String.valueOf(i))
-                                .voltage(voltages[i].mut_replace(motor.get() * RobotController.getBatteryVoltage(),
-                                        Volts))
-                                .linearVelocity(velocities[i].mut_replace(encoder.getVelocity(), MetersPerSecond))
-                                .linearPosition(distances[i].mut_replace(encoder.getPosition(), Meters));
+                log.motor("drive-motor-" + String.valueOf(i))
+                        .voltage(voltages[i].mut_replace(motor.get() * RobotController.getBatteryVoltage(), Volts))
+                        .linearVelocity(velocities[i].mut_replace(encoder.getVelocity(), MetersPerSecond))
+                        .linearPosition(distances[i].mut_replace(encoder.getPosition(), Meters));
 
-                    }
-                }, subsystem));
+            }
+        }, subsystem));
 
         Command quasistaticForward = sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
         Command quasistaticBackward = sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
         Command dynamicForward = sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward);
         Command dynamicBackward = sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse);
 
-        Command all = quasistaticForward
-                .andThen(quasistaticBackward)
-                .andThen(dynamicForward)
-                .andThen(dynamicBackward)
+        Command all = quasistaticForward.andThen(quasistaticBackward).andThen(dynamicForward).andThen(dynamicBackward)
                 .withName("Run All");
 
-        layout.add("Quasistatic Forward",
-                sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
-        layout.add("Quasistatic Backward",
-                sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
-        layout.add("Dynamic Forward",
-                sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
-        layout.add("Dynamic Backward",
-                sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+        layout.add("Quasistatic Forward", sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
+        layout.add("Quasistatic Backward", sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
+        layout.add("Dynamic Forward", sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
+        layout.add("Dynamic Backward", sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
         layout.add("Run All", all);
     }
 

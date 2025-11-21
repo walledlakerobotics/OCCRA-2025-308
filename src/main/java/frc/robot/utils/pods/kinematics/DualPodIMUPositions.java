@@ -28,8 +28,7 @@ public class DualPodIMUPositions implements Interpolatable<DualPodIMUPositions> 
     public double thetaRadians;
 
     /** Constructs a DualPodIMUPositions with zeros for all member fields. */
-    public DualPodIMUPositions() {
-    }
+    public DualPodIMUPositions() {}
 
     /**
      * Constructs a DualPodIMUPositions.
@@ -50,15 +49,13 @@ public class DualPodIMUPositions implements Interpolatable<DualPodIMUPositions> 
      * @param forward Distance measured by the forward pod.
      * @param lateral Distance measured by the lateral pod.
      */
-    public DualPodIMUPositions(
-            Distance forward, Distance lateral, Rotation2d theta) {
+    public DualPodIMUPositions(Distance forward, Distance lateral, Rotation2d theta) {
         this(forward.in(Meters), lateral.in(Meters), theta.getRadians());
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof DualPodIMUPositions other
-                && Math.abs(other.forwardMeters - forwardMeters) < 1E-9
+        return obj instanceof DualPodIMUPositions other && Math.abs(other.forwardMeters - forwardMeters) < 1E-9
                 && Math.abs(other.lateralMeters - lateralMeters) < 1E-9;
     }
 
@@ -69,17 +66,13 @@ public class DualPodIMUPositions implements Interpolatable<DualPodIMUPositions> 
 
     @Override
     public String toString() {
-        return String.format(
-                "PodWheelPositions(Forward: %.2f m, Lateral: %.2f m, Rotation: %.2f rad)",
-                forwardMeters,
-                lateralMeters,
-                thetaRadians);
+        return String.format("PodWheelPositions(Forward: %.2f m, Lateral: %.2f m, Rotation: %.2f rad)", forwardMeters,
+                lateralMeters, thetaRadians);
     }
 
     @Override
     public DualPodIMUPositions interpolate(DualPodIMUPositions endValue, double t) {
-        return new DualPodIMUPositions(
-                MathUtil.interpolate(this.forwardMeters, endValue.forwardMeters, t),
+        return new DualPodIMUPositions(MathUtil.interpolate(this.forwardMeters, endValue.forwardMeters, t),
                 MathUtil.interpolate(this.lateralMeters, endValue.lateralMeters, t),
                 MathUtil.interpolate(this.thetaRadians, endValue.thetaRadians, t));
     }

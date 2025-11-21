@@ -6,8 +6,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Kinematics;
 
 /**
- * Helper class that converts speeds from a dual pod (forward and lateral) +
- * IMU (gyro) system into chassis speeds (dx, dy, dtheta).
+ * Helper class that converts speeds from a dual pod (forward and lateral) + IMU
+ * (gyro) system into chassis speeds (dx, dy, dtheta).
  */
 public class DualPodIMUKinematics implements Kinematics<DualPodIMUSpeeds, DualPodIMUPositions> {
     private final Translation2d m_forwardPodMeters;
@@ -60,16 +60,12 @@ public class DualPodIMUKinematics implements Kinematics<DualPodIMUSpeeds, DualPo
     }
 
     @Override
-    public DualPodIMUPositions interpolate(DualPodIMUPositions startValue, DualPodIMUPositions endValue,
-            double t) {
+    public DualPodIMUPositions interpolate(DualPodIMUPositions startValue, DualPodIMUPositions endValue, double t) {
         return startValue.interpolate(endValue, t);
     }
 
     public DualPodIMUPositions copy(DualPodIMUPositions positions) {
-        return new DualPodIMUPositions(
-                positions.forwardMeters,
-                positions.lateralMeters,
-                positions.thetaRadians);
+        return new DualPodIMUPositions(positions.forwardMeters, positions.lateralMeters, positions.thetaRadians);
     }
 
     public void copyInto(DualPodIMUPositions positions, DualPodIMUPositions output) {
