@@ -245,11 +245,12 @@ public class DriveTrain extends SubsystemBase {
         @SuppressWarnings("resource")
         PIDController rotationController = new PIDController(DriveConstants.kDriftCorrectionP,
                 DriveConstants.kDriftCorrectionI, DriveConstants.kDriftCorrectionD);
-        MutableDouble prevZRotation = new MutableDouble(1.0);
+        MutableDouble prevZRotation = new MutableDouble(Double.NaN);
 
         return runOnce(() -> {
             rotationSetpoint.setValue(m_gyro.getRotation2d());
             rotationController.reset();
+            prevZRotation.setValue(Double.NaN);
         }).andThen(run(() -> {
             double xSpeed = -xSpeedSupplier.getAsDouble();
             double ySpeed = -ySpeedSupplier.getAsDouble();
@@ -278,6 +279,7 @@ public class DriveTrain extends SubsystemBase {
                 if (prevZRotation.getValue() != 0) {
                     rotationSetpoint.setValue(m_gyro.getRotation2d());
                     rotationController.reset();
+                    prevZRotation.setValue(Double.NaN);
                 }
 
                 // continuously adjust for potential drift
