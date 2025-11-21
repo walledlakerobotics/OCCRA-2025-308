@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -35,11 +33,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command intake() {
-        AtomicBoolean gotCube = new AtomicBoolean(false);
-
         return runOnce(() -> {
-            gotCube.set(false);
-
             m_leftMotor.set(IntakeConstants.kIntakeSpeed);
             m_rightMotor.set(IntakeConstants.kIntakeSpeed);
         })
@@ -47,6 +41,18 @@ public class Intake extends SubsystemBase {
                 .finallyDo(() -> {
                     m_leftMotor.set(0);
                     m_rightMotor.set(0);
+                });
+    }
+
+    public Command intakeHold() {
+        return runOnce(() -> {
+            m_leftMotor.set(IntakeConstants.kIntakeSpeed);
+            m_rightMotor.set(IntakeConstants.kIntakeSpeed);
+        })
+                .andThen(Commands.idle(this))
+                .finallyDo(() -> {
+                    m_leftMotor.set(0.1);
+                    m_rightMotor.set(0.1);
                 });
     }
 
