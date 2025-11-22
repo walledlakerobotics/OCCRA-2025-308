@@ -1,6 +1,6 @@
 plugins {
-    id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.3.2"
+    id 'java'
+    id 'edu.wpi.first.GradleRIO' version '2025.3.2'
 }
 
 java {
@@ -8,7 +8,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def ROBOT_MAIN_CLASS = 'frc.robot.Main'
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -74,7 +74,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     //json 
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 }
