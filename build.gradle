@@ -73,9 +73,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    //json 
-    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 }
 
